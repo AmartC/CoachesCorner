@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.params=
+comment0.target=void\ init()
+comment1.params=
+comment1.target=void\ start()
+comment2.params=
+comment2.target=void\ stop()
+comment3.params=evt\ x\ y
+comment3.target=boolean\ mouseDown(java.awt.Event,\ int,\ int)
+comment4.params=
+comment4.target=void\ run()
+comment5.params=g
+comment5.target=void\ update(java.awt.Graphics)
+comment6.params=g
+comment6.target=void\ paint(java.awt.Graphics)
+numComments=7

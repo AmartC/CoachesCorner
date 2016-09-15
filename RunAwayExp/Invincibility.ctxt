@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Invincibility()
+comment1.params=X\ Y\ D
+comment1.target=Invincibility(int,\ int,\ int)
+comment2.params=
+comment2.target=int\ getX()
+comment3.params=
+comment3.target=int\ getY()
+comment4.params=
+comment4.target=void\ drawInv()
+comment5.params=A
+comment5.target=boolean\ collision(Ball)
+comment6.params=gr
+comment6.target=void\ paint(java.awt.Graphics)
+numComments=7

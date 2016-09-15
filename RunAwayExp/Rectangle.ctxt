@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Rectangle()
+comment1.params=X\ Y\ l\ w\ m\ C
+comment1.target=Rectangle(int,\ int,\ int,\ int,\ int,\ int)
+comment10.params=h
+comment10.target=void\ moveRect(int)
+comment11.params=gr
+comment11.target=void\ paint(java.awt.Graphics)
+comment2.params=
+comment2.target=int\ getX()
+comment3.params=
+comment3.target=int\ getY()
+comment4.params=
+comment4.target=int\ getLength()
+comment5.params=
+comment5.target=int\ getWidth()
+comment6.params=
+comment6.target=int\ getXEdge()
+comment7.params=
+comment7.target=int\ getYEdge()
+comment8.params=A
+comment8.target=boolean\ collision(Ball)
+comment9.params=
+comment9.target=void\ drawRect()
+numComments=12
