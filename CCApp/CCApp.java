@@ -10,13 +10,17 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.applet.*;
-public class RunAway extends Applet implements Runnable
+import java.net.URL;
+import javax.imageio.ImageIO;
+
+public class CCApp extends Applet implements Runnable
 {
     Thread runner;
     Image Buffer;
     Graphics gBuffer;
     int width, height;
     boolean rightKey, leftKey, upKey, downKey;
+    Image football;
    public void init()
    {   
         width=this.getSize().width;
@@ -24,7 +28,7 @@ public class RunAway extends Applet implements Runnable
         Buffer=createImage(width,height);
         gBuffer=Buffer.getGraphics();
         addKeyListener(new MyKeyListener());
-        user = new Ball(400, 300, 25, 0, 0, 4);
+        football = getImage(getCodeBase(), "football.jpg");
    }
    private class MyKeyListener extends KeyAdapter{
        public void keyPressed(KeyEvent e){
@@ -100,15 +104,11 @@ public class RunAway extends Applet implements Runnable
     {
         while(true)
         {
-            if(upKey){user.moveUp();}
-            if(downKey){user.moveDown();}
-            if(leftKey){user.moveLeft();}
-            if(rightKey){user.moveRight();}
-            repaint();
             try {runner.sleep(13);}
             catch (Exception e) { }
             gBuffer.setColor(Color.black);
             gBuffer.fillRect(0,0,width,height);
+            gBuffer.drawImage(football, 0, 0, this);
             repaint();  
         } 
     }
