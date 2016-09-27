@@ -21,6 +21,8 @@ public class CCApp extends Applet implements Runnable
     int width, height;
     boolean rightKey, leftKey, upKey, downKey;
     Image football;
+    double ONE_YARD;
+    int FIFTY_YARD_LINE;
    public void init()
    {   
         width=this.getSize().width;
@@ -28,7 +30,9 @@ public class CCApp extends Applet implements Runnable
         Buffer=createImage(width,height);
         gBuffer=Buffer.getGraphics();
         addKeyListener(new MyKeyListener());
-        football = getImage(getCodeBase(), "football.jpg");
+        football = getImage(getCodeBase(), "football2.jpg");
+        ONE_YARD = 12.25;
+        FIFTY_YARD_LINE = 636;
    }
    private class MyKeyListener extends KeyAdapter{
        public void keyPressed(KeyEvent e){
@@ -106,9 +110,16 @@ public class CCApp extends Applet implements Runnable
         {
             try {runner.sleep(13);}
             catch (Exception e) { }
-            gBuffer.setColor(Color.black);
-            gBuffer.fillRect(0,0,width,height);
             gBuffer.drawImage(football, 0, 0, this);
+            gBuffer.setColor(Color.blue);
+            gBuffer.fillOval(600,300,30,30);
+            gBuffer.drawLine(FIFTY_YARD_LINE,0,FIFTY_YARD_LINE,700);
+            
+            gBuffer.setColor(Color.red);
+            gBuffer.drawLine((int)(FIFTY_YARD_LINE+ONE_YARD),0,(int)(FIFTY_YARD_LINE+ONE_YARD),700);
+            gBuffer.drawLine((int)(FIFTY_YARD_LINE+5*ONE_YARD),0,(int)(FIFTY_YARD_LINE+5*ONE_YARD),700);
+            gBuffer.drawLine((int)(FIFTY_YARD_LINE+20*ONE_YARD),0,(int)(FIFTY_YARD_LINE+20*ONE_YARD),700);
+            gBuffer.drawLine((int)(FIFTY_YARD_LINE+50*ONE_YARD),0,(int)(FIFTY_YARD_LINE+50*ONE_YARD),700);
             repaint();  
         } 
     }
