@@ -133,13 +133,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     return true;
   }
 
-  public void mouseEntered( MouseEvent e ) {}
+  public void mouseEntered(MouseEvent e) {}
 
-  public void mouseExited( MouseEvent e ) {}
+  public void mouseExited(MouseEvent e) {}
 
-  public void mouseClicked( MouseEvent e ) {}
+  public void mouseClicked(MouseEvent e) {}
 
-  public void mousePressed( MouseEvent e )
+  public void mousePressed(MouseEvent e)
   {
     mx = e.getX();
     my = e.getY();
