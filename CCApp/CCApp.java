@@ -20,6 +20,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Graphics gBuffer;
   int width, height;
   boolean rightKey, leftKey, upKey, downKey;
+  Image footballField;
   Image football;
   double ONE_YARD;
   int FIFTY_YARD_LINE;
@@ -35,7 +36,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     Buffer=createImage(width,height);
     gBuffer=Buffer.getGraphics();
     addKeyListener(new MyKeyListener());
-    football = getImage(getCodeBase(), "football2.jpg");
+    footballField = getImage(getCodeBase(), "football2.jpg");
+    football = getImage(getCodeBase(), "footballcloseup.png");
     ONE_YARD = 12.25;
     FIFTY_YARD_LINE = 636;
 
@@ -185,7 +187,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
-      gBuffer.drawImage(football, 0, 0, this);
+      gBuffer.drawImage(footballField, 0, 0, this);
+      gBuffer.drawImage(football, x, y, this);
       gBuffer.setColor(Color.blue);
       gBuffer.fillOval(x,y,30,30);
       gBuffer.drawLine(FIFTY_YARD_LINE,0,FIFTY_YARD_LINE,700);
