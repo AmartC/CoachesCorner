@@ -28,6 +28,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int x, y;    // the coordinates of the circle/dot/player
   int mx, my;  // the most recently recorded mouse coordinates
   boolean isMouseDraggingBox = false;
+  ArrayList<Player> offensivePlayers;
+  ArrayList<Player> defensivePlayers;
 
   public void init()
   {
@@ -43,6 +45,23 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     x = 600;
     y = 300;
+    int incrementer = 0;
+    offensivePlayers = new ArrayList<Player>();
+    defensivePlayers = new ArrayList<Player>();
+    for(int a = 0; a < 11; a++)
+    {
+      Player c = new Player(x, y + incrementer);
+      offensivePlayers.add(c);
+      incrementer += 30;
+    }
+
+    incrementer = 0;
+    for(int b = 0; b < 11; b++)
+    {
+      Player c = new Player(x + 45, y + incrementer);
+      defensivePlayers.add(c);
+      incrementer += 30;
+    }
     addMouseListener(this);
     addMouseMotionListener(this);
   }
@@ -181,6 +200,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  public void displayPlayerPositions()
+  {
+    for(int a = 0; a < 11; a++)
+    {
+      gBuffer.setColor(Color.blue);
+      gBuffer.fillOval(offensivePlayers.get(a).getX(), offensivePlayers.get(a).getY(),30,30);
+    }
+
+    for(int b = 0; b < 11; b++)
+    {
+      gBuffer.setColor(Color.red);
+      gBuffer.fillOval(defensivePlayers.get(b).getX(), defensivePlayers.get(b).getY(),30,30);
+    }
+  }
+
   public void run()
   {
     while(true)
@@ -188,9 +222,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       try {runner.sleep(13);}
       catch (Exception e) {}
       gBuffer.drawImage(footballField, 0, 0, this);
-      gBuffer.drawImage(football, x, y, this);
-      gBuffer.setColor(Color.blue);
-      gBuffer.fillOval(x,y,30,30);
+      gBuffer.drawImage(football, 450, 500, this);
+      displayPlayerPositions();
       gBuffer.drawLine(FIFTY_YARD_LINE,0,FIFTY_YARD_LINE,700);
 
       gBuffer.setColor(Color.red);

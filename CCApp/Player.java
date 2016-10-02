@@ -8,16 +8,22 @@
 
 public class Player
 {
-  int x;
-  int y;
+  int xPoint;
+  int yPoint;
+  
+  public Player(int x, int y)
+  {
+    xPoint = x;
+    yPoint = y;
+  }
 
   public int getX()
   {
-    return x;
+    return xPoint;
   }
 
   public int getY()
   {
-    return y;
+    return yPoint;
   }
 }
