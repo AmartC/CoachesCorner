@@ -23,16 +23,17 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Image footballField;
   Image football;
   double ONE_YARD;
-  int FIFTY_YARD_LINE;
-
-  int x, y;    // the coordinates of the circle/dot/player
+  int CENTER_OF_FIELD;
+  
+  int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
   boolean isMouseDraggingBox = false;
-  ArrayList<Player> offensivePlayers;
-  ArrayList<Player> defensivePlayers;
 
   public void init()
   {
+    //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    //width = (int)screenSize.getWidth();
+    //height = (int)screenSize.getHeight();
     width=this.getSize().width;
     height=this.getSize().height;
     Buffer=createImage(width,height);
@@ -40,28 +41,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     addKeyListener(new MyKeyListener());
     footballField = getImage(getCodeBase(), "football2.jpg");
     football = getImage(getCodeBase(), "footballcloseup.png");
-    ONE_YARD = 12.25;
-    FIFTY_YARD_LINE = 636;
-
-    x = 600;
-    y = 300;
-    int incrementer = 0;
-    offensivePlayers = new ArrayList<Player>();
-    defensivePlayers = new ArrayList<Player>();
-    for(int a = 0; a < 11; a++)
-    {
-      Player c = new Player(x, y + incrementer);
-      offensivePlayers.add(c);
-      incrementer += 30;
-    }
-
-    incrementer = 0;
-    for(int b = 0; b < 11; b++)
-    {
-      Player c = new Player(x + 45, y + incrementer);
-      defensivePlayers.add(c);
-      incrementer += 30;
-    }
+    ONE_YARD = height/20;
+    CENTER_OF_FIELD = width/2;
+    y = (int)(ONE_YARD*15);
+    x = width/2;
+    
     addMouseListener(this);
     addMouseMotionListener(this);
   }
@@ -199,20 +183,22 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       e.consume();
     }
   }
-
-  public void displayPlayerPositions()
+  
+  public void paintField(Graphics gBuffer)
   {
-    for(int a = 0; a < 11; a++)
-    {
-      gBuffer.setColor(Color.blue);
-      gBuffer.fillOval(offensivePlayers.get(a).getX(), offensivePlayers.get(a).getY(),30,30);
-    }
-
-    for(int b = 0; b < 11; b++)
-    {
-      gBuffer.setColor(Color.red);
-      gBuffer.fillOval(defensivePlayers.get(b).getX(), defensivePlayers.get(b).getY(),30,30);
-    }
+      gBuffer.setColor(Color.white);
+      for(int i = 0; i <= 20; i++)
+      {
+          if(i % 5 == 0)
+          {
+              gBuffer.drawLine(0,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
+          }else{
+              gBuffer.drawLine(0,i*(int)ONE_YARD,10,i*(int)ONE_YARD);
+              gBuffer.drawLine(width-10,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
+              gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
+              gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
+          }
+      }
   }
 
   public void run()
@@ -221,16 +207,15 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
-      gBuffer.drawImage(footballField, 0, 0, this);
-      gBuffer.drawImage(football, 450, 500, this);
-      displayPlayerPositions();
-      gBuffer.drawLine(FIFTY_YARD_LINE,0,FIFTY_YARD_LINE,700);
-
-      gBuffer.setColor(Color.red);
-      gBuffer.drawLine((int)(FIFTY_YARD_LINE+ONE_YARD),0,(int)(FIFTY_YARD_LINE+ONE_YARD),700);
-      gBuffer.drawLine((int)(FIFTY_YARD_LINE+5*ONE_YARD),0,(int)(FIFTY_YARD_LINE+5*ONE_YARD),700);
-      gBuffer.drawLine((int)(FIFTY_YARD_LINE+20*ONE_YARD),0,(int)(FIFTY_YARD_LINE+20*ONE_YARD),700);
-      gBuffer.drawLine((int)(FIFTY_YARD_LINE+50*ONE_YARD),0,(int)(FIFTY_YARD_LINE+50*ONE_YARD),700);
+      gBuffer.setColor(new Color(25,150,10));
+      gBuffer.fillRect(0,0,width,height);
+      //gBuffer.drawImage(football, x, y, this);
+      
+      paintField(gBuffer);
+      
+      gBuffer.setColor(Color.blue);
+      gBuffer.fillOval(x,y,20,20);
+      
       repaint();
     }
   }
