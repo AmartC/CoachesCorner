@@ -24,10 +24,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Image football;
   double ONE_YARD;
   int CENTER_OF_FIELD;
-  
+
   int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
   boolean isMouseDraggingBox = false;
+  ArrayList<Player> offensivePlayers;
+  ArrayList<Player> defensivePlayers;
 
   public void init()
   {
@@ -45,7 +47,20 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     CENTER_OF_FIELD = width/2;
     y = (int)(ONE_YARD*15);
     x = width/2;
-    
+    offensivePlayers = new ArrayList<Player>();
+    defensivePlayers = new ArrayList<Player>();
+    for(int a = 0; a < 11; a++)
+    {
+      Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
+      offensivePlayers.add(c);
+    }
+
+    for(int b = 0; b < 11; b++)
+    {
+      Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
+      defensivePlayers.add(c);
+    }
+
     addMouseListener(this);
     addMouseMotionListener(this);
   }
@@ -183,7 +198,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       e.consume();
     }
   }
-  
+
   public void paintField(Graphics gBuffer)
   {
       gBuffer.setColor(Color.white);
@@ -201,6 +216,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
   }
 
+  public void displayPlayerPositions()
+  {
+    for(int a = 0; a < 11; a++)
+    {
+      gBuffer.setColor(Color.blue);
+      gBuffer.fillOval(offensivePlayers.get(a).getX(), offensivePlayers.get(a).getY(),20,20);
+    }
+
+    for(int b = 0; b < 11; b++)
+    {
+      gBuffer.setColor(Color.red);
+      gBuffer.fillOval(defensivePlayers.get(b).getX(), defensivePlayers.get(b).getY(),20,20);
+    }
+  }
+
   public void run()
   {
     while(true)
@@ -210,12 +240,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       gBuffer.setColor(new Color(25,150,10));
       gBuffer.fillRect(0,0,width,height);
       //gBuffer.drawImage(football, x, y, this);
-      
+
       paintField(gBuffer);
-      
-      gBuffer.setColor(Color.blue);
-      gBuffer.fillOval(x,y,20,20);
-      
+      displayPlayerPositions();
+
       repaint();
     }
   }
