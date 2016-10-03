@@ -10,6 +10,9 @@ public class Player
 {
   int xPoint;
   int yPoint;
+  int speed;
+  String color;
+  int number;
   
   public Player(int x, int y)
   {
@@ -26,4 +29,21 @@ public class Player
   {
     return yPoint;
   }
+  
+  public int getSpeed()
+  {
+      return speed;
+  }
+  
+  public String getColor()
+  {
+      return color;
+  }
+  
+  public int getNum()
+  {
+      return number;
+  }
+  
+  
 }
