@@ -18,6 +18,7 @@ public class Player
   {
     xPoint = x;
     yPoint = y;
+    speed = 0;
   }
 
   public int getX()
@@ -45,5 +46,9 @@ public class Player
       return number;
   }
   
-  
+  // Precondition: 1 <= s <= 3
+  public void setSpeed(int s)
+  {
+      speed = s;
+  }
 }
