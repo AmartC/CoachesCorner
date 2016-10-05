@@ -8,22 +8,44 @@
 
 public class Player
 {
-  int xPoint;
-  int yPoint;
-  
-  public Player(int x, int y)
+  int x;
+  int y;
+  int diameter;
+
+  public Player(int xPoint, int yPoint, int playerDiameter)
   {
-    xPoint = x;
-    yPoint = y;
+    x = xPoint;
+    y = yPoint;
+    diameter = playerDiameter;
   }
 
   public int getX()
   {
-    return xPoint;
+    return x;
   }
 
   public int getY()
   {
-    return yPoint;
+    return y;
+  }
+
+  public int getDiameter()
+  {
+    return diameter;
+  }
+
+  public void setX(int xPoint)
+  {
+    x = xPoint;
+  }
+
+  public void setY(int yPoint)
+  {
+    y = yPoint;
+  }
+
+  public void setDiameter(int playerDiameter)
+  {
+    diameter = playerDiameter;
   }
 }

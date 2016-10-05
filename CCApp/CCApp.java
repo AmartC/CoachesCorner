@@ -27,9 +27,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
-  boolean isMouseDraggingBox = false;
+  int playerDiameter;   // Player's circle/dot diameter
+  boolean isMouseDraggingPlayer;
   ArrayList<Player> offensivePlayers;
   ArrayList<Player> defensivePlayers;
+  Player selectedPlayer;  // The player that has been clicked on
 
   public void init()
   {
@@ -47,17 +49,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     CENTER_OF_FIELD = width/2;
     y = (int)(ONE_YARD*15);
     x = width/2;
+    playerDiameter = 20;
+    isMouseDraggingPlayer = false;
     offensivePlayers = new ArrayList<Player>();
     defensivePlayers = new ArrayList<Player>();
+    selectedPlayer = null;
+
     for(int a = 0; a < 11; a++)
     {
-      Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
+      Player c = new Player(x + (25 * (a - 5)) - 20, y - 20, playerDiameter);
       offensivePlayers.add(c);
     }
 
     for(int b = 0; b < 11; b++)
     {
-      Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
+      Player c = new Player(x + (25 * (b - 5)) - 20, y + 10, playerDiameter);
       defensivePlayers.add(c);
     }
 
@@ -163,16 +169,51 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     mx = e.getX();
     my = e.getY();
-    if (x < mx && mx < x+30 && y < my && my < y+30)
+
+    for(int i = 0; i < offensivePlayers.size(); i++)
     {
-      isMouseDraggingBox = true;
+      // Grab the player's information
+      Player currentPlayer = offensivePlayers.get(i);
+      int playerPositionX = currentPlayer.getX();
+      int playerPositionY = currentPlayer.getY();
+      int playerCircleDiameter = currentPlayer.getDiameter();
+
+      // Check if mouse clicked on this player by comparing coordinates
+      if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+      {
+        isMouseDraggingPlayer = true;
+        selectedPlayer = currentPlayer;
+        break;
+      }
     }
+
+    // If mouse did not click on an offensive player, then check the defensive players
+    if(!isMouseDraggingPlayer)
+    {
+      for(int i = 0; i < defensivePlayers.size(); i++)
+      {
+        // Grab the player's information
+        Player currentPlayer = defensivePlayers.get(i);
+        int playerPositionX = currentPlayer.getX();
+        int playerPositionY = currentPlayer.getY();
+        int playerCircleDiameter = currentPlayer.getDiameter();
+
+        // Check if mouse clicked on this player by comparing coordinates
+        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+        {
+          isMouseDraggingPlayer = true;
+          selectedPlayer = currentPlayer;
+          break;
+        }
+      }
+    }
+
     e.consume();
   }
 
   public void mouseReleased(MouseEvent e)
   {
-    isMouseDraggingBox = false;
+    isMouseDraggingPlayer = false;
     e.consume();
   }
 
@@ -180,15 +221,17 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void mouseDragged(MouseEvent e)
   {
-    if (isMouseDraggingBox)
+    if (isMouseDraggingPlayer)
     {
       // get the latest mouse position
       int new_mx = e.getX();
       int new_my = e.getY();
 
-      // displace the box by the distance the mouse moved since the last event
-      x += new_mx - mx;
-      y += new_my - my;
+      // displace the player by the distance the mouse moved since the last event
+      int playerPositionX = selectedPlayer.getX();
+      int playerPositionY = selectedPlayer.getY();
+      selectedPlayer.setX(playerPositionX + new_mx - mx);
+      selectedPlayer.setY(playerPositionY + new_my - my);
 
       // update our data
       mx = new_mx;
@@ -218,16 +261,24 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void displayPlayerPositions()
   {
-    for(int a = 0; a < 11; a++)
+    for(int a = 0; a < offensivePlayers.size(); a++)
     {
+      Player currentPlayer = offensivePlayers.get(a);
+      int playerPositionX = currentPlayer.getX();
+      int playerPositionY = currentPlayer.getY();
+      int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(Color.blue);
-      gBuffer.fillOval(offensivePlayers.get(a).getX(), offensivePlayers.get(a).getY(),20,20);
+      gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
     }
 
-    for(int b = 0; b < 11; b++)
+    for(int b = 0; b < defensivePlayers.size(); b++)
     {
+      Player currentPlayer = defensivePlayers.get(b);
+      int playerPositionX = currentPlayer.getX();
+      int playerPositionY = currentPlayer.getY();
+      int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(Color.red);
-      gBuffer.fillOval(defensivePlayers.get(b).getX(), defensivePlayers.get(b).getY(),20,20);
+      gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
     }
   }
 
