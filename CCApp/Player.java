@@ -8,25 +8,29 @@
 
 public class Player
 {
-  int x;
-  int y;
+  int xPoint;
+  int yPoint;
+  int speed;
+  String color;
+  int number;
   int diameter;
-
-  public Player(int xPoint, int yPoint, int playerDiameter)
+  
+  public Player(int x, int y)
   {
-    x = xPoint;
-    y = yPoint;
-    diameter = playerDiameter;
+    xPoint = x;
+    yPoint = y;
+    speed = 0;
+    diameter = 20;
   }
 
   public int getX()
   {
-    return x;
+    return xPoint;
   }
 
   public int getY()
   {
-    return y;
+    return yPoint;
   }
 
   public int getDiameter()
@@ -47,5 +51,26 @@ public class Player
   public void setDiameter(int playerDiameter)
   {
     diameter = playerDiameter;
+  }
+  
+  public int getSpeed()
+  {
+      return speed;
+  }
+  
+  public String getColor()
+  {
+      return color;
+  }
+  
+  public int getNum()
+  {
+      return number;
+  }
+  
+  // Precondition: 1 <= s <= 3
+  public void setSpeed(int s)
+  {
+      speed = s;
   }
 }
