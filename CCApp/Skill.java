@@ -1,14 +1,14 @@
 
 /**
  * Class for RB, WR, S, C, OLB
- * 
- * @author Ethan Fox 
+ *
+ * @author Ethan Fox
  * @version 1.0
  */
-public class Skill extends Player
+public class Fastest extends Player
 {
     // Constructor
-    public Skill(int xp, int yp)
+    public Fastest(int xp, int yp)
     {
         super(xp, yp);
         setSpeed(3);

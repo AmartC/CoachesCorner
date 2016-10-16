@@ -30,7 +30,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   ArrayList<Player> offensivePlayers;
   ArrayList<Player> defensivePlayers;
   Player selectedPlayer;  // The player that has been clicked on
-  
+
   TextField xText, yText, speedText;
   boolean xTextPlaced, yTextPlaced, speedTextPlaced;
 
@@ -53,13 +53,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     offensivePlayers = new ArrayList<Player>();
     defensivePlayers = new ArrayList<Player>();
     selectedPlayer = null;
-    
+
     xText = new TextField();
     add(xText);
     xText.addActionListener(
       new ActionListener()
       {
-        public void actionPerformed(ActionEvent event) 
+        public void actionPerformed(ActionEvent event)
         {
           String s = xText.getText();
           try
@@ -69,21 +69,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
             {
               selectedPlayer.setX(result);
             }
-          } 
-          catch(NumberFormatException e) 
+          }
+          catch(NumberFormatException e)
           {
             xText.setText("Invalid");
           }
         }
       }
     );
-      
+
     yText = new TextField();
     add(yText);
     yText.addActionListener(
       new ActionListener()
       {
-        public void actionPerformed(ActionEvent event) 
+        public void actionPerformed(ActionEvent event)
         {
           String s = yText.getText();
           try
@@ -93,39 +93,39 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
             {
               selectedPlayer.setY(result);
             }
-          } 
-          catch(NumberFormatException e) 
+          }
+          catch(NumberFormatException e)
           {
             yText.setText("Invalid");
           }
         }
       }
     );
-      
+
     speedText = new TextField();
     add(speedText);
     speedText.addActionListener(
       new ActionListener()
       {
-        public void actionPerformed(ActionEvent event) 
+        public void actionPerformed(ActionEvent event)
         {
           String s = speedText.getText();
           try
           {
             int result = Integer.parseInt(s);
-            if(selectedPlayer != null)
+            if(selectedPlayer != null && result >= 1 && result <= 3)
             {
               selectedPlayer.setSpeed(result);
             }
-          } 
-          catch(NumberFormatException e) 
+          }
+          catch(NumberFormatException e)
           {
             speedText.setText("Invalid");
           }
         }
       }
-    );      
-      
+    );
+
     xTextPlaced = yTextPlaced = speedTextPlaced = false;
 
     for(int a = 0; a < 11; a++)
@@ -367,22 +367,22 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         xText.setSize(60, 20);
         xTextPlaced = true;
       }
-      
+
       if(!yTextPlaced)
       {
         yText.setLocation(200, 10);
         yText.setSize(60, 20);
         yTextPlaced = true;
       }
-      
+
       if(!speedTextPlaced)
       {
         speedText.setLocation(350, 10);
         speedText.setSize(60, 20);
         speedTextPlaced = true;
       }
-      
-      
+
+
       gBuffer.setColor(new Color(25,150,10));
       gBuffer.fillRect(0,0,width,height);
       //gBuffer.drawImage(football, x, y, this);
