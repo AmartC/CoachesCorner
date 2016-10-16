@@ -227,6 +227,37 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  public void handleInput()
+  {
+    JPanel panel = new JPanel();
+    JLabel xLabel = new JLabel("X");
+    JTextField newX = new JTextField(10);
+    panel.add(xLabel);
+    panel.add(newX);
+    JLabel yLabel = new JLabel("Y");
+    JTextField newY = new JTextField(10);
+    panel.add(yLabel);
+    panel.add(newY);
+    JLabel speedVal = new JLabel("Speed");
+    JTextField newSpeed = new JTextField(10);
+    panel.add(speedVal);
+    panel.add(newSpeed);
+    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for selected player", JOptionPane.OK_CANCEL_OPTION);
+    if (value == JOptionPane.OK_OPTION)
+    {
+      // OK was pressed
+      int updatedX = Integer.parseInt(newX.getText());
+      int updatedY = Integer.parseInt(newY.getText());
+      int updatedSpeed = Integer.parseInt(newSpeed.getText());
+      selectedPlayer.setX(updatedX);
+      selectedPlayer.setY(updatedY);
+      if(updatedSpeed >= 1 && updatedSpeed <= 3)
+      {
+        selectedPlayer.setSpeed(updatedSpeed);
+      }
+    }
+  }
+
   public boolean mouseDown(Event evt,int x,int y)
   {
     return true;
@@ -242,31 +273,45 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     mx = e.getX();
     my = e.getY();
-
-    for(int i = 0; i < offensivePlayers.size(); i++)
+    if(SwingUtilities.isRightMouseButton(e))
     {
-      // Grab the player's information
-      Player currentPlayer = offensivePlayers.get(i);
-      int playerPositionX = currentPlayer.getX();
-      int playerPositionY = currentPlayer.getY();
-      int playerCircleDiameter = currentPlayer.getDiameter();
-
-      // Check if mouse clicked on this player by comparing coordinates
-      if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+      for(int i = 0; i < offensivePlayers.size(); i++)
       {
-        isMouseDraggingPlayer = true;
-        selectedPlayer = currentPlayer;
-        break;
+        Player currentPlayer = offensivePlayers.get(i);
+        int playerPositionX = currentPlayer.getX();
+        int playerPositionY = currentPlayer.getY();
+        int playerCircleDiameter = currentPlayer.getDiameter();
+        // Check if mouse clicked on this player by comparing coordinates
+        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+        {
+          selectedPlayer = currentPlayer;
+          this.handleInput();
+          break;
+        }
+      }
+
+      for(int j = 0; j < defensivePlayers.size(); j++)
+      {
+        Player currentPlayer = defensivePlayers.get(j);
+        int playerPositionX = currentPlayer.getX();
+        int playerPositionY = currentPlayer.getY();
+        int playerCircleDiameter = currentPlayer.getDiameter();
+        // Check if mouse clicked on this player by comparing coordinates
+        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+        {
+          selectedPlayer = currentPlayer;
+          this.handleInput();
+          break;
+        }
       }
     }
 
-    // If mouse did not click on an offensive player, then check the defensive players
-    if(!isMouseDraggingPlayer)
+    else
     {
-      for(int i = 0; i < defensivePlayers.size(); i++)
+      for(int i = 0; i < offensivePlayers.size(); i++)
       {
         // Grab the player's information
-        Player currentPlayer = defensivePlayers.get(i);
+        Player currentPlayer = offensivePlayers.get(i);
         int playerPositionX = currentPlayer.getX();
         int playerPositionY = currentPlayer.getY();
         int playerCircleDiameter = currentPlayer.getDiameter();
@@ -277,6 +322,27 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           isMouseDraggingPlayer = true;
           selectedPlayer = currentPlayer;
           break;
+        }
+      }
+
+      // If mouse did not click on an offensive player, then check the defensive players
+      if(!isMouseDraggingPlayer)
+      {
+        for(int i = 0; i < defensivePlayers.size(); i++)
+        {
+          // Grab the player's information
+          Player currentPlayer = defensivePlayers.get(i);
+          int playerPositionX = currentPlayer.getX();
+          int playerPositionY = currentPlayer.getY();
+          int playerCircleDiameter = currentPlayer.getDiameter();
+
+          // Check if mouse clicked on this player by comparing coordinates
+          if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+          {
+            isMouseDraggingPlayer = true;
+            selectedPlayer = currentPlayer;
+            break;
+          }
         }
       }
     }

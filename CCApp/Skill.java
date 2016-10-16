@@ -5,10 +5,10 @@
  * @author Ethan Fox
  * @version 1.0
  */
-public class Fastest extends Player
+public class Skill extends Player
 {
     // Constructor
-    public Fastest(int xp, int yp)
+    public Skill(int xp, int yp)
     {
         super(xp, yp);
         setSpeed(3);
