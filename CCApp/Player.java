@@ -38,14 +38,14 @@ public class Player
     return diameter;
   }
 
-  public void setX(int xPoint)
+  public void setX(int x)
   {
-    x = xPoint;
+    xPoint = x;
   }
 
-  public void setY(int yPoint)
+  public void setY(int y)
   {
-    y = yPoint;
+    yPoint = y;
   }
 
   public void setDiameter(int playerDiameter)

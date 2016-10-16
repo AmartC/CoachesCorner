@@ -20,8 +20,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Graphics gBuffer;
   int width, height;
   boolean rightKey, leftKey, upKey, downKey;
-  Image footballField;
-  Image football;
   double ONE_YARD;
   int CENTER_OF_FIELD;
 
@@ -32,6 +30,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   ArrayList<Player> offensivePlayers;
   ArrayList<Player> defensivePlayers;
   Player selectedPlayer;  // The player that has been clicked on
+  
+  TextField xText, yText, speedText;
+  boolean xTextPlaced, yTextPlaced, speedTextPlaced;
 
   public void init()
   {
@@ -43,8 +44,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     Buffer=createImage(width,height);
     gBuffer=Buffer.getGraphics();
     addKeyListener(new MyKeyListener());
-    footballField = getImage(getCodeBase(), "football2.jpg");
-    football = getImage(getCodeBase(), "footballcloseup.png");
     ONE_YARD = height/20;
     CENTER_OF_FIELD = width/2;
     y = (int)(ONE_YARD*15);
@@ -54,16 +53,90 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     offensivePlayers = new ArrayList<Player>();
     defensivePlayers = new ArrayList<Player>();
     selectedPlayer = null;
+    
+    xText = new TextField();
+    add(xText);
+    xText.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event) 
+        {
+          String s = xText.getText();
+          try
+          {
+            int result = Integer.parseInt(s);
+            if(selectedPlayer != null)
+            {
+              selectedPlayer.setX(result);
+            }
+          } 
+          catch(NumberFormatException e) 
+          {
+            xText.setText("Invalid");
+          }
+        }
+      }
+    );
+      
+    yText = new TextField();
+    add(yText);
+    yText.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event) 
+        {
+          String s = yText.getText();
+          try
+          {
+            int result = Integer.parseInt(s);
+            if(selectedPlayer != null)
+            {
+              selectedPlayer.setY(result);
+            }
+          } 
+          catch(NumberFormatException e) 
+          {
+            yText.setText("Invalid");
+          }
+        }
+      }
+    );
+      
+    speedText = new TextField();
+    add(speedText);
+    speedText.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event) 
+        {
+          String s = speedText.getText();
+          try
+          {
+            int result = Integer.parseInt(s);
+            if(selectedPlayer != null)
+            {
+              selectedPlayer.setSpeed(result);
+            }
+          } 
+          catch(NumberFormatException e) 
+          {
+            speedText.setText("Invalid");
+          }
+        }
+      }
+    );      
+      
+    xTextPlaced = yTextPlaced = speedTextPlaced = false;
 
     for(int a = 0; a < 11; a++)
     {
-      Player c = new Player(x + (25 * (a - 5)) - 20, y - 20, playerDiameter);
+      Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
       offensivePlayers.add(c);
     }
 
     for(int b = 0; b < 11; b++)
     {
-      Player c = new Player(x + (25 * (b - 5)) - 20, y + 10, playerDiameter);
+      Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
       defensivePlayers.add(c);
     }
 
@@ -288,6 +361,28 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
+      if(!xTextPlaced)
+      {
+        xText.setLocation(50, 10);
+        xText.setSize(60, 20);
+        xTextPlaced = true;
+      }
+      
+      if(!yTextPlaced)
+      {
+        yText.setLocation(200, 10);
+        yText.setSize(60, 20);
+        yTextPlaced = true;
+      }
+      
+      if(!speedTextPlaced)
+      {
+        speedText.setLocation(350, 10);
+        speedText.setSize(60, 20);
+        speedTextPlaced = true;
+      }
+      
+      
       gBuffer.setColor(new Color(25,150,10));
       gBuffer.fillRect(0,0,width,height);
       //gBuffer.drawImage(football, x, y, this);
