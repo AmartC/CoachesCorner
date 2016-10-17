@@ -14,12 +14,12 @@ public class Player
   String color;
   int number;
   int diameter;
-  
+
   public Player(int x, int y)
   {
     xPoint = x;
     yPoint = y;
-    speed = 0;
+    speed = 1;
     diameter = 20;
   }
 
@@ -52,22 +52,22 @@ public class Player
   {
     diameter = playerDiameter;
   }
-  
+
   public int getSpeed()
   {
       return speed;
   }
-  
+
   public String getColor()
   {
       return color;
   }
-  
+
   public int getNum()
   {
       return number;
   }
-  
+
   // Precondition: 1 <= s <= 3
   public void setSpeed(int s)
   {
