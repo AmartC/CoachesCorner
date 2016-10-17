@@ -317,19 +317,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void paintField(Graphics gBuffer)
   {
-      gBuffer.setColor(Color.white);
-      for(int i = 0; i <= 20; i++)
+    gBuffer.setColor(new Color(25,150,10));
+    gBuffer.fillRect(0,0,width,height);
+    gBuffer.setColor(Color.white);
+    for(int i = 0; i <= 20; i++)
+    {
+      if(i % 5 == 0)
       {
-          if(i % 5 == 0)
-          {
-              gBuffer.drawLine(0,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
-          }else{
-              gBuffer.drawLine(0,i*(int)ONE_YARD,10,i*(int)ONE_YARD);
-              gBuffer.drawLine(width-10,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
-              gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
-              gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
-          }
+        gBuffer.drawLine(0,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
+      }else{
+        gBuffer.drawLine(0,i*(int)ONE_YARD,10,i*(int)ONE_YARD);
+        gBuffer.drawLine(width-10,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
+        gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
+        gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
       }
+    }
   }
 
   public void displayPlayerPositions()
@@ -355,7 +357,47 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
-  public void run()
+  public void run(){
+    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
+    String[] options = new String[] {"Create a Play",
+      "Run a Play",
+      "Whiteboard Mode",
+      "Create Playbook",
+      "Load Playbook",
+      "Export Playbook",
+      "View Tutorials",
+      "Exit"};
+    // Get choice from user
+    int choice = JOptionPane.showOptionDialog(null,
+      "Welcome to Coach's Corner!",
+      "CCApp",
+      JOptionPane.DEFAULT_OPTION,
+      JOptionPane.INFORMATION_MESSAGE,
+      icon,
+      options,
+      options[7]);
+
+    // Interpret the user's choice
+    if(choice == 0){
+      createPlay();
+    }else if(choice == 1){
+      runPlay();
+    }else if(choice == 2){
+      whiteBoard();
+    }else if(choice == 3){
+      createBook();
+    }else if(choice == 4){
+      loadBook();
+    }else if(choice == 5){
+      exportBook();
+    }else if(choice == 6){
+      viewTutorial();
+    }else{
+      System.exit(0);
+    }
+  }
+
+  public void createPlay()
   {
     while(true)
     {
@@ -382,9 +424,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         speedTextPlaced = true;
       }
 
-
-      gBuffer.setColor(new Color(25,150,10));
-      gBuffer.fillRect(0,0,width,height);
       //gBuffer.drawImage(football, x, y, this);
 
       paintField(gBuffer);
@@ -393,6 +432,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
     }
   }
+  public void runPlay(){}
+  public void whiteBoard(){}
+  public void createBook(){}
+  public void loadBook(){}
+  public void exportBook(){}
+  public void viewTutorial(){}
 
   public void update(Graphics g)
   {
