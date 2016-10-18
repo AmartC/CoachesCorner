@@ -20,7 +20,7 @@ public class Player
     xPoint = x;
     yPoint = y;
     speed = 0;
-    diameter = 20;
+    diameter = 30;
   }
 
   public int getX()

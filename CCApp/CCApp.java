@@ -459,7 +459,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }else if(choice == 6){
       viewTutorial();
     }else{
-      System.exit(0);
+      // HOW THE FUCK DO WE CLOSE AN APPLET????
     }
   }
 
