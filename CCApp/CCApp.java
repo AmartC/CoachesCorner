@@ -27,8 +27,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int mx, my;  // the most recently recorded mouse coordinates
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer;
-  ArrayList<Player> offensivePlayers;
-  ArrayList<Player> defensivePlayers;
+  Team offensiveTeam;
+  Team defensiveTeam;
   Player selectedPlayer;  // The player that has been clicked on
 
   TextField xText, yText, speedText;
@@ -50,8 +50,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     x = width/2;
     playerDiameter = 20;
     isMouseDraggingPlayer = false;
-    offensivePlayers = new ArrayList<Player>();
-    defensivePlayers = new ArrayList<Player>();
+    offensiveTeam = new Team("Offense", Color.red);
+    defensiveTeam = new Team("Defensive", Color.blue);
     selectedPlayer = null;
 
     xText = new TextField();
@@ -131,13 +131,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     for(int a = 0; a < 11; a++)
     {
       Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
-      offensivePlayers.add(c);
+      offensiveTeam.addPlayer(c);
     }
 
     for(int b = 0; b < 11; b++)
     {
       Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
-      defensivePlayers.add(c);
+      defensiveTeam.addPlayer(c);
     }
 
     addMouseListener(this);
@@ -276,73 +276,39 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     if(SwingUtilities.isRightMouseButton(e))
     {
-      for(int i = 0; i < offensivePlayers.size(); i++)
+      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+      if(newSelectedPlayer != null)
       {
-        Player currentPlayer = offensivePlayers.get(i);
-        int playerPositionX = currentPlayer.getX();
-        int playerPositionY = currentPlayer.getY();
-        int playerCircleDiameter = currentPlayer.getDiameter();
-        // Check if mouse clicked on this player by comparing coordinates
-        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
-        {
-          selectedPlayer = currentPlayer;
-          this.handleInput();
-          break;
-        }
+        selectedPlayer = newSelectedPlayer;
+        this.handleInput();
       }
-
-      for(int j = 0; j < defensivePlayers.size(); j++)
+      else
       {
-        Player currentPlayer = defensivePlayers.get(j);
-        int playerPositionX = currentPlayer.getX();
-        int playerPositionY = currentPlayer.getY();
-        int playerCircleDiameter = currentPlayer.getDiameter();
-        // Check if mouse clicked on this player by comparing coordinates
-        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+        if(newSelectedPlayer != null)
         {
-          selectedPlayer = currentPlayer;
+          selectedPlayer = newSelectedPlayer;
           this.handleInput();
-          break;
         }
       }
     }
     else
     {
-      for(int i = 0; i < offensivePlayers.size(); i++)
+      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+      if(newSelectedPlayer != null)
       {
-        // Grab the player's information
-        Player currentPlayer = offensivePlayers.get(i);
-        int playerPositionX = currentPlayer.getX();
-        int playerPositionY = currentPlayer.getY();
-        int playerCircleDiameter = currentPlayer.getDiameter();
-
-        // Check if mouse clicked on this player by comparing coordinates
-        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
-        {
-          isMouseDraggingPlayer = true;
-          selectedPlayer = currentPlayer;
-          break;
-        }
+        isMouseDraggingPlayer = true;
+        selectedPlayer = newSelectedPlayer;
       }
 
       // If mouse did not click on an offensive player, then check the defensive players
       if(!isMouseDraggingPlayer)
       {
-        for(int i = 0; i < defensivePlayers.size(); i++)
+        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+        if(newSelectedPlayer != null)
         {
-          // Grab the player's information
-          Player currentPlayer = defensivePlayers.get(i);
-          int playerPositionX = currentPlayer.getX();
-          int playerPositionY = currentPlayer.getY();
-          int playerCircleDiameter = currentPlayer.getDiameter();
-
-          // Check if mouse clicked on this player by comparing coordinates
-          if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
-          {
-            isMouseDraggingPlayer = true;
-            selectedPlayer = currentPlayer;
-            break;
-          }
+          isMouseDraggingPlayer = true;
+          selectedPlayer = newSelectedPlayer;
         }
       }
     }
@@ -402,25 +368,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void displayPlayerPositions()
   {
-    for(int a = 0; a < offensivePlayers.size(); a++)
-    {
-      Player currentPlayer = offensivePlayers.get(a);
-      int playerPositionX = currentPlayer.getX();
-      int playerPositionY = currentPlayer.getY();
-      int playerCircleDiameter = currentPlayer.getDiameter();
-      gBuffer.setColor(Color.blue);
-      gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
-    }
-
-    for(int b = 0; b < defensivePlayers.size(); b++)
-    {
-      Player currentPlayer = defensivePlayers.get(b);
-      int playerPositionX = currentPlayer.getX();
-      int playerPositionY = currentPlayer.getY();
-      int playerCircleDiameter = currentPlayer.getDiameter();
-      gBuffer.setColor(Color.red);
-      gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
-    }
+    offensiveTeam.displayTeam(gBuffer);
+    defensiveTeam.displayTeam(gBuffer);
   }
 
   public void run(){

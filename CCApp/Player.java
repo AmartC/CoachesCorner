@@ -5,32 +5,56 @@
  * Aaron Cheng
  * Date: 10/2/2016
  */
+import java.awt.*;
+
 
 public class Player
 {
-  int xPoint;
-  int yPoint;
+  String name;
+  Point position;
   int speed;
-  String color;
+  Color color;
   int number;
   int diameter;
-  
+
   public Player(int x, int y)
   {
-    xPoint = x;
-    yPoint = y;
+    name = "";
+    position = new Point(x, y);
     speed = 0;
+    color = Color.white;
+    number = -1;
     diameter = 30;
+  }
+
+  public Player(int x, int y, String playerName, int playerNumber, Color playerColor, int playerDiameter)
+  {
+    position = new Point(x, y);
+    name = playerName;
+    number = playerNumber;
+    color = playerColor;
+    diameter = playerDiameter;
+    speed = 0;
+  }
+
+  public String getName()
+  {
+    return name;
   }
 
   public int getX()
   {
-    return xPoint;
+    return position.getX();
   }
 
   public int getY()
   {
-    return yPoint;
+    return position.getY();
+  }
+
+  public Point getXY()
+  {
+    return new Point(position);
   }
 
   public int getDiameter()
@@ -38,36 +62,46 @@ public class Player
     return diameter;
   }
 
+  public int getSpeed()
+  {
+      return speed;
+  }
+
+  public Color getColor()
+  {
+      return color;
+  }
+
+  public int getNumber()
+  {
+      return number;
+  }
+
   public void setX(int x)
   {
-    xPoint = x;
+    position.setX(x);
   }
 
   public void setY(int y)
   {
-    yPoint = y;
+    position.setY(y);
+  }
+
+  public void setNumber(int playerNumber)
+  {
+    number = playerNumber;
+  }
+
+  public void setColor(Color playerColor)
+  {
+    color = playerColor;
   }
 
   public void setDiameter(int playerDiameter)
   {
     diameter = playerDiameter;
   }
-  
-  public int getSpeed()
-  {
-      return speed;
-  }
-  
-  public String getColor()
-  {
-      return color;
-  }
-  
-  public int getNum()
-  {
-      return number;
-  }
-  
+
   // Precondition: 1 <= s <= 3
   public void setSpeed(int s)
   {
