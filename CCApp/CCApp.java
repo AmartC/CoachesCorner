@@ -20,16 +20,20 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Graphics gBuffer;
   int width, height;
   boolean rightKey, leftKey, upKey, downKey;
+
   double ONE_YARD;
   int CENTER_OF_FIELD;
 
   int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
+  int selectedFrame;
+
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer;
+  Player selectedPlayer;  // The player that has been clicked on
+
   Team offensiveTeam;
   Team defensiveTeam;
-  Player selectedPlayer;  // The player that has been clicked on
 
   TextField xText, yText, speedText;
   boolean xTextPlaced, yTextPlaced, speedTextPlaced;
@@ -44,15 +48,20 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     Buffer=createImage(width,height);
     gBuffer=Buffer.getGraphics();
     addKeyListener(new MyKeyListener());
+
     ONE_YARD = height/20;
     CENTER_OF_FIELD = width/2;
+
     y = (int)(ONE_YARD*15);
     x = width/2;
+    selectedFrame = 0;
+
     playerDiameter = 20;
     isMouseDraggingPlayer = false;
+    selectedPlayer = null;
+
     offensiveTeam = new Team("Offense", Color.red);
     defensiveTeam = new Team("Defensive", Color.blue);
-    selectedPlayer = null;
 
     xText = new TextField();
     add(xText);
@@ -368,8 +377,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void displayPlayerPositions()
   {
-    offensiveTeam.displayTeam(gBuffer);
-    defensiveTeam.displayTeam(gBuffer);
+    offensiveTeam.displayTeamAtFrame(gBuffer, selectedFrame);
+    defensiveTeam.displayTeamAtFrame(gBuffer, selectedFrame);
   }
 
   public void run(){

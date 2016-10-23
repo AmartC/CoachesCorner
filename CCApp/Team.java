@@ -28,6 +28,11 @@ public class Team
     return players.size();
   }
 
+  public ArrayList<Player> getPlayers()
+  {
+    return new ArrayList<Player>(players);
+  }
+
   public void addPlayer(Player newPlayer)
   {
     newPlayer.setColor(color);
@@ -35,6 +40,13 @@ public class Team
   }
 
   // Creates a new player, add to team, then return that player.
+  public Player addNewPlayer(Point position, String playerName, int playerNumber, int playerDiameter)
+  {
+    Player newPlayer = new Player(position.getX(), position.getY(), playerName, playerNumber, color, playerDiameter);
+    players.add(newPlayer);
+    return newPlayer;
+  }
+
   public Player addNewPlayer(int x, int y, String playerName, int playerNumber, int playerDiameter)
   {
     Player newPlayer = new Player(x, y, playerName, playerNumber, color, playerDiameter);
@@ -95,6 +107,18 @@ public class Team
       int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(color);
       gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
+    }
+  }
+
+  public void displayTeamAtFrame(Graphics gBuffer, int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point playerPosition = currentPlayer.getPositionAtFrame(frame);
+      int playerCircleDiameter = currentPlayer.getDiameter();
+      gBuffer.setColor(color);
+      gBuffer.fillOval(playerPosition.getX(), playerPosition.getY(), playerCircleDiameter, playerCircleDiameter);
     }
   }
 }
