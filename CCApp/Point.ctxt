@@ -1,0 +1,20 @@
+#BlueJ class context
+comment0.params=xPoint\ yPoint
+comment0.target=Point(int,\ int)
+comment1.params=other
+comment1.target=Point(Point)
+comment2.params=
+comment2.target=int\ getX()
+comment3.params=
+comment3.target=int\ getY()
+comment4.params=xPoint
+comment4.target=void\ setX(int)
+comment5.params=yPoint
+comment5.target=void\ setY(int)
+comment6.params=other
+comment6.target=Point\ add(Point)
+comment7.params=other
+comment7.target=Point\ subtract(Point)
+comment8.params=magnitude
+comment8.target=Point\ multiply(int)
+numComments=9

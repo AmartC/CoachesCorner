@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.params=teamName\ teamColor
+comment0.target=Team(java.lang.String,\ java.awt.Color)
+comment1.params=
+comment1.target=int\ getSize()
+comment2.params=
+comment2.target=java.util.ArrayList\ getPlayers()
+comment3.params=newPlayer
+comment3.target=void\ addPlayer(Player)
+comment4.params=position\ playerName\ playerNumber\ playerDiameter
+comment4.target=Player\ addNewPlayer(Point,\ java.lang.String,\ int,\ int)
+comment5.params=x\ y\ playerName\ playerNumber\ playerDiameter
+comment5.target=Player\ addNewPlayer(int,\ int,\ java.lang.String,\ int,\ int)
+comment6.params=target
+comment6.target=Player\ findPlayerAtPoint(Point)
+comment7.params=x\ y
+comment7.target=Player\ findPlayerAtPoint(int,\ int)
+comment8.params=gBuffer
+comment8.target=void\ displayTeam(java.awt.Graphics)
+comment9.params=gBuffer\ frame
+comment9.target=void\ displayTeamAtFrame(java.awt.Graphics,\ int)
+numComments=10

@@ -34,9 +34,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   Team offensiveTeam;
   Team defensiveTeam;
-
-  TextField xText, yText, speedText;
-  boolean xTextPlaced, yTextPlaced, speedTextPlaced;
+  JLabel frameLabel;
+  JTextField newFrame;
 
   public void init()
   {
@@ -63,80 +62,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     offensiveTeam = new Team("Offense", Color.red);
     defensiveTeam = new Team("Defensive", Color.blue);
 
-    xText = new TextField();
-    add(xText);
-    xText.addActionListener(
-      new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-        {
-          String s = xText.getText();
-          try
-          {
-            int result = Integer.parseInt(s);
-            if(selectedPlayer != null)
-            {
-              selectedPlayer.setX(result);
-            }
-          }
-          catch(NumberFormatException e)
-          {
-            xText.setText("Invalid");
-          }
-        }
-      }
-    );
-
-    yText = new TextField();
-    add(yText);
-    yText.addActionListener(
-      new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-        {
-          String s = yText.getText();
-          try
-          {
-            int result = Integer.parseInt(s);
-            if(selectedPlayer != null)
-            {
-              selectedPlayer.setY(result);
-            }
-          }
-          catch(NumberFormatException e)
-          {
-            yText.setText("Invalid");
-          }
-        }
-      }
-    );
-
-    speedText = new TextField();
-    add(speedText);
-    speedText.addActionListener(
-      new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-        {
-          String s = speedText.getText();
-          try
-          {
-            int result = Integer.parseInt(s);
-            if(selectedPlayer != null && result >= 1 && result <= 3)
-            {
-              selectedPlayer.setSpeed(result);
-            }
-          }
-          catch(NumberFormatException e)
-          {
-            speedText.setText("Invalid");
-          }
-        }
-      }
-    );
-
-    xTextPlaced = yTextPlaced = speedTextPlaced = false;
-
     for(int a = 0; a < 11; a++)
     {
       Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
@@ -151,6 +76,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     addMouseListener(this);
     addMouseMotionListener(this);
+    
+    
+    frameLabel = new JLabel("Frame");
+    newFrame = new JTextField(10);
+    this.add(frameLabel);
+    this.add(newFrame);
+    
   }
 
   private class MyKeyListener extends KeyAdapter
@@ -236,86 +168,33 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
-  //function that will display the dialog box.
   public void handleInput()
   {
     JPanel panel = new JPanel();
     JLabel xLabel = new JLabel("X");
     JTextField newX = new JTextField(10);
-    newX.setText(String.valueOf(selectedPlayer.getX()));
     panel.add(xLabel);
     panel.add(newX);
     JLabel yLabel = new JLabel("Y");
     JTextField newY = new JTextField(10);
-    newY.setText(String.valueOf(selectedPlayer.getY()));
     panel.add(yLabel);
     panel.add(newY);
-    JLabel speedVal = new JLabel("Speed");
+    JLabel speedLabel = new JLabel("Speed");
     JTextField newSpeed = new JTextField(10);
-    panel.add(speedVal);
+    panel.add(speedLabel);
     panel.add(newSpeed);
-    newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
-    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for selected player", JOptionPane.OK_CANCEL_OPTION);
-    // OK was pressed
+    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
     {
-<<<<<<< HEAD
       // OK was pressed
       int updatedX = Integer.parseInt(newX.getText());
       int updatedY = Integer.parseInt(newY.getText());
-      int updatedSpeed = Integer.parseInt(newSpeed.getText());
       selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
 
+      int updatedSpeed = Integer.parseInt(newSpeed.getText());
       if(updatedSpeed >= 1 && updatedSpeed <= 3)
-=======
-      // Check to see if input is all spaces.
-      if(newX.getText().replaceAll("\\s","").length() != 0)
->>>>>>> Handler
       {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          int updatedX = Integer.parseInt(newX.getText());
-          selectedPlayer.setX(updatedX);
-        }
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setX(selectedPlayer.getX());
-        }
-      }
-
-      // Check to see if input is all spaces.
-      if(newY.getText().replaceAll("\\s","").length() != 0)
-      {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          int updatedY = Integer.parseInt(newY.getText());
-          selectedPlayer.setY(updatedY);
-        }
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setY(selectedPlayer.getY());
-        }
-      }
-
-      // Check to see if input is all spaces.
-      if(newSpeed.getText().replaceAll("\\s","").length() != 0)
-      {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          int updatedSpeed = Integer.parseInt(newSpeed.getText());
-          if(updatedSpeed >= 1 && updatedSpeed <= 3)
-          {
-            selectedPlayer.setSpeed(updatedSpeed);
-          }
-        }
-
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setSpeed(selectedPlayer.getSpeed());
-        }
+        selectedPlayer.setSpeed(updatedSpeed);
       }
     }
   }
@@ -338,28 +217,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     if(SwingUtilities.isRightMouseButton(e))
     {
-<<<<<<< HEAD
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
       if(newSelectedPlayer != null)
       {
         selectedPlayer = newSelectedPlayer;
         this.handleInput();
-=======
-      //Check to see if an offensive player was right clicked on
-      for(int i = 0; i < offensivePlayers.size(); i++)
-      {
-        Player currentPlayer = offensivePlayers.get(i);
-        int playerPositionX = currentPlayer.getX();
-        int playerPositionY = currentPlayer.getY();
-        int playerCircleDiameter = currentPlayer.getDiameter();
-        // Check if mouse right clicked on this player by comparing coordinates
-        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
-        {
-          selectedPlayer = currentPlayer;
-          this.handleInput();
-          break;
-        }
->>>>>>> Handler
       }
       else
       {
@@ -459,8 +321,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       "Create Playbook",
       "Load Playbook",
       "Export Playbook",
-      "View Tutorials",
-      "Exit"};
+      "View Tutorials"};
     // Get choice from user
     int choice = JOptionPane.showOptionDialog(null,
       "Welcome to Coach's Corner!",
@@ -469,7 +330,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       JOptionPane.INFORMATION_MESSAGE,
       icon,
       options,
-      options[7]);
+      options[6]);
 
     // Interpret the user's choice
     if(choice == 0){
@@ -486,8 +347,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       exportBook();
     }else if(choice == 6){
       viewTutorial();
-    }else{
-      // HOW THE FUCK DO WE CLOSE AN APPLET????
     }
   }
 
@@ -497,26 +356,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
-      if(!xTextPlaced)
-      {
-        xText.setLocation(50, 10);
-        xText.setSize(60, 20);
-        xTextPlaced = true;
-      }
-
-      if(!yTextPlaced)
-      {
-        yText.setLocation(200, 10);
-        yText.setSize(60, 20);
-        yTextPlaced = true;
-      }
-
-      if(!speedTextPlaced)
-      {
-        speedText.setLocation(350, 10);
-        speedText.setSize(60, 20);
-        speedTextPlaced = true;
-      }
 
       //gBuffer.drawImage(football, x, y, this);
 
