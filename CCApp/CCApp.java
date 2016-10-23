@@ -236,24 +236,30 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  //function that will display the dialog box.
   public void handleInput()
   {
     JPanel panel = new JPanel();
     JLabel xLabel = new JLabel("X");
     JTextField newX = new JTextField(10);
+    newX.setText(String.valueOf(selectedPlayer.getX()));
     panel.add(xLabel);
     panel.add(newX);
     JLabel yLabel = new JLabel("Y");
     JTextField newY = new JTextField(10);
+    newY.setText(String.valueOf(selectedPlayer.getY()));
     panel.add(yLabel);
     panel.add(newY);
     JLabel speedVal = new JLabel("Speed");
     JTextField newSpeed = new JTextField(10);
     panel.add(speedVal);
     panel.add(newSpeed);
+    newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
     int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for selected player", JOptionPane.OK_CANCEL_OPTION);
+    // OK was pressed
     if (value == JOptionPane.OK_OPTION)
     {
+<<<<<<< HEAD
       // OK was pressed
       int updatedX = Integer.parseInt(newX.getText());
       int updatedY = Integer.parseInt(newY.getText());
@@ -261,8 +267,55 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
 
       if(updatedSpeed >= 1 && updatedSpeed <= 3)
+=======
+      // Check to see if input is all spaces.
+      if(newX.getText().replaceAll("\\s","").length() != 0)
+>>>>>>> Handler
       {
-        selectedPlayer.setSpeed(updatedSpeed);
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          int updatedX = Integer.parseInt(newX.getText());
+          selectedPlayer.setX(updatedX);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setX(selectedPlayer.getX());
+        }
+      }
+
+      // Check to see if input is all spaces.
+      if(newY.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          int updatedY = Integer.parseInt(newY.getText());
+          selectedPlayer.setY(updatedY);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setY(selectedPlayer.getY());
+        }
+      }
+
+      // Check to see if input is all spaces.
+      if(newSpeed.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          int updatedSpeed = Integer.parseInt(newSpeed.getText());
+          if(updatedSpeed >= 1 && updatedSpeed <= 3)
+          {
+            selectedPlayer.setSpeed(updatedSpeed);
+          }
+        }
+
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setSpeed(selectedPlayer.getSpeed());
+        }
       }
     }
   }
@@ -285,11 +338,28 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     if(SwingUtilities.isRightMouseButton(e))
     {
+<<<<<<< HEAD
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
       if(newSelectedPlayer != null)
       {
         selectedPlayer = newSelectedPlayer;
         this.handleInput();
+=======
+      //Check to see if an offensive player was right clicked on
+      for(int i = 0; i < offensivePlayers.size(); i++)
+      {
+        Player currentPlayer = offensivePlayers.get(i);
+        int playerPositionX = currentPlayer.getX();
+        int playerPositionY = currentPlayer.getY();
+        int playerCircleDiameter = currentPlayer.getDiameter();
+        // Check if mouse right clicked on this player by comparing coordinates
+        if (playerPositionX < mx && mx < playerPositionX+playerCircleDiameter && playerPositionY < my && my < playerPositionY+playerCircleDiameter)
+        {
+          selectedPlayer = currentPlayer;
+          this.handleInput();
+          break;
+        }
+>>>>>>> Handler
       }
       else
       {
