@@ -12,7 +12,6 @@ import java.util.*;
 public class Player
 {
   String name;
-  //Point position;
   ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames.
   int speed;
   Color color;
@@ -22,7 +21,6 @@ public class Player
   public Player(int x, int y)
   {
     name = "";
-    //position = new Point(x, y);
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
     speed = 0;
@@ -33,7 +31,6 @@ public class Player
 
   public Player(int x, int y, String playerName, int playerNumber, Color playerColor, int playerDiameter)
   {
-    //position = new Point(x, y);
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
     name = playerName;

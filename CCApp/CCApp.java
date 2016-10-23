@@ -258,8 +258,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       int updatedX = Integer.parseInt(newX.getText());
       int updatedY = Integer.parseInt(newY.getText());
       int updatedSpeed = Integer.parseInt(newSpeed.getText());
-      selectedPlayer.setX(updatedX);
-      selectedPlayer.setY(updatedY);
+      selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
+
       if(updatedSpeed >= 1 && updatedSpeed <= 3)
       {
         selectedPlayer.setSpeed(updatedSpeed);
@@ -342,10 +342,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       int new_my = e.getY();
 
       // displace the player by the distance the mouse moved since the last event
-      int playerPositionX = selectedPlayer.getX();
-      int playerPositionY = selectedPlayer.getY();
-      selectedPlayer.setX(playerPositionX + new_mx - mx);
-      selectedPlayer.setY(playerPositionY + new_my - my);
+      Point selectedPlayerPosition = selectedPlayer.getPositionAtFrame(selectedFrame);
+      int playerPositionX = selectedPlayerPosition.getX();
+      int playerPositionY = selectedPlayerPosition.getY();
+      selectedPlayer.setPositionAtFrame(selectedFrame, playerPositionX + new_mx - mx, playerPositionY + new_my - my);
 
       // update our data
       mx = new_mx;
