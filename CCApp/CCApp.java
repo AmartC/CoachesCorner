@@ -31,8 +31,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw; // various booleans for things
   ArrayList<Point> paint_coords; // coordinates for drawing straight lines
-  ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whitebaord Mode
+  ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
+  ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
   ArrayList<ArrayList<Integer>> frees = new ArrayList<ArrayList<Integer>>();
   
   Player selectedPlayer;  // The player that has been clicked on
@@ -241,6 +242,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       if(mx >= 58 && mx <= 108 && my >= 5 && my < 55)
       {
         lines.clear();
+        frees.clear();
+        squares.clear();
+        circles.clear();
       }
       // Draw Line on/off
       if(mx >= 5 && mx <= 55 && my > 58 && my <= 108 && markerMode)
@@ -273,7 +277,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
       // Draw Square on/off
-      if(mx >= 58 && mx <= 108 && my >= 58 && my <= 108 && markerMode){
+      if(mx >= 58 && mx <= 108 && my >= 58 && my <= 108 && markerMode)
+      {
         if(!sqDraw)
         {
           sqDraw = true;
@@ -286,8 +291,22 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           sqDraw = false;
         }
       }
+      // Draw Circle on/off
+      if(mx >= 58 && mx <= 108 && my >= 111 && my <= 161 && markerMode)
+      {
+        if(!circDraw)
+        {
+          circDraw = true;
+          sqDraw = false;
+          lineDraw = false;
+          freeDraw = false;
+        }
+        else
+        {
+          circDraw = false;
+        }
+      }
     }
-    
     if(SwingUtilities.isRightMouseButton(e) && !markerMode)
     {
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
@@ -314,7 +333,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
             paint_coords = new ArrayList<Point>();
             paint_coords.add(new Point(mx, my));
           }
-          if(sqDraw)
+          else if(sqDraw || circDraw)
           {
             paint_coords = new ArrayList<Point>();
             paint_coords.add(new Point(mx, my));
@@ -357,13 +376,14 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       lines.add(new_line);
       paint_coords.clear();
     }
-    else if(markerMode && sqDraw)
+    else if(markerMode && (sqDraw || circDraw)) 
     {
       paint_coords.add(new Point(e.getX(), e.getY()));
       Point start_point = paint_coords.get(0);
       Point end_point = paint_coords.get(1);
       Line new_line = new Line(start_point, end_point);
-      squares.add(new_line);
+      if(sqDraw) squares.add(new_line);
+      else circles.add(new_line);
       paint_coords.clear();
     }
     e.consume();
@@ -450,10 +470,51 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       int y2 = curr.getEnd().getY();
       int height = y2 - y1;
       int width = x2 - x1;
-      /*
-      else if(height < 0) height *= -1;
-      else if(width < 0) width *= -1;
-      else gBuffer.drawRect(x1,y1,width,height);*/
+      if(height < 0 && width < 0)
+      {
+        height *= -1;
+        width *= -1;
+        gBuffer.drawRect(x2,y2,width,height);
+      }
+      else if(height < 0)
+      {
+        height *= -1;
+        gBuffer.drawRect(x1,y2,width,height);
+      }
+      else if(width < 0)
+      {
+        width *= -1;
+        gBuffer.drawRect(x2,y1,width,height);
+      }
+      else gBuffer.drawRect(x1,y1,width,height);
+    }
+    // draw circles
+    for(int i = 0; i < circles.size(); i++)
+    {
+      Line curr = circles.get(i);
+      int x1 = curr.getStart().getX();
+      int y1 = curr.getStart().getY();
+      int x2 = curr.getEnd().getX();
+      int y2 = curr.getEnd().getY();
+      int height = y2 - y1;
+      int width = x2 - x1;
+      if(height < 0 && width < 0)
+      {
+        height *= -1;
+        width *= -1;
+        gBuffer.drawOval(x2,y2,width,height);
+      }
+      else if(height < 0)
+      {
+        height *= -1;
+        gBuffer.drawOval(x1,y2,width,height);
+      }
+      else if(width < 0)
+      {
+        width *= -1;
+        gBuffer.drawOval(x2,y1,width,height);
+      }
+      else gBuffer.drawOval(x1,y1,width,height);
     }
   }
   
@@ -518,6 +579,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       catch (Exception e) {}
       paintField(gBuffer);
       displayPlayerPositions();
+      drawLines();
       // "Marker Mode" Toggle
       if(markerMode)gBuffer.setColor(Color.GREEN);
       else gBuffer.setColor(Color.WHITE);
@@ -585,7 +647,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
         gBuffer.drawOval(68,121,30,30);
       }
-      drawLines();
+      
       repaint();
     }
   }
