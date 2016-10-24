@@ -1,7 +1,7 @@
 #BlueJ class context
 comment0.params=s\ e
 comment0.target=Line(Point,\ Point)
-comment0.text=\r\n\ Constructor\ for\ objects\ of\ class\ Line\r\n
+comment0.text=\n\ Constructor\ for\ objects\ of\ class\ Line\n
 comment1.params=
 comment1.target=Point\ getStart()
 comment2.params=
