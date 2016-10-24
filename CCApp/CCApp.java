@@ -76,13 +76,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     addMouseListener(this);
     addMouseMotionListener(this);
-    
-    
+
+
     frameLabel = new JLabel("Frame");
     newFrame = new JTextField(10);
     this.add(frameLabel);
     this.add(newFrame);
-    
+
   }
 
   private class MyKeyListener extends KeyAdapter
@@ -173,28 +173,90 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     JPanel panel = new JPanel();
     JLabel xLabel = new JLabel("X");
     JTextField newX = new JTextField(10);
+    Point playerPoints = selectedPlayer.getPositionAtFrame(selectedFrame);
+    //newX.setText(String.valueOf(selectedPlayer.getX()));
+    newX.setText(String.valueOf(playerPoints.getX()));
     panel.add(xLabel);
     panel.add(newX);
     JLabel yLabel = new JLabel("Y");
     JTextField newY = new JTextField(10);
+    //newY.setText(String.valueOf(selectedPlayer.getY()));
+    newY.setText(String.valueOf(playerPoints.getY()));
     panel.add(yLabel);
     panel.add(newY);
     JLabel speedLabel = new JLabel("Speed");
     JTextField newSpeed = new JTextField(10);
+    newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
     panel.add(speedLabel);
     panel.add(newSpeed);
     int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
     {
+      int updatedX = playerPoints.getX();
+      int updatedY = playerPoints.getY();
+      int updatedSpeed = selectedPlayer.getSpeed();
       // OK was pressed
-      int updatedX = Integer.parseInt(newX.getText());
-      int updatedY = Integer.parseInt(newY.getText());
+      if(newX.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedX = Integer.parseInt(newX.getText());
+          if(updatedX < 0)
+          {
+            updatedX = 0;
+          }
+          else if (updatedX > width)
+          {
+            updatedX = width - playerDiameter - (playerDiameter / 2);
+          }
+          selectedPlayer.setX(updatedX);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setX(playerPoints.getX());
+        }
+      }
+
+      if(newY.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedY = Integer.parseInt(newY.getText());
+          if(updatedY < 0)
+          {
+            updatedY = 0;
+          }
+          else if (updatedY > height)
+          {
+            updatedY = height - playerDiameter - (playerDiameter / 2);
+          }
+          selectedPlayer.setY(updatedY);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setY(playerPoints.getY());
+        }
+      }
+
       selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
 
-      int updatedSpeed = Integer.parseInt(newSpeed.getText());
-      if(updatedSpeed >= 1 && updatedSpeed <= 3)
+      if(newSpeed.getText().replaceAll("\\s","").length() != 0)
       {
-        selectedPlayer.setSpeed(updatedSpeed);
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedSpeed = Integer.parseInt(newSpeed.getText());
+          if (updatedSpeed >= 1 && updatedSpeed <= 3)
+          {
+            selectedPlayer.setSpeed(updatedSpeed);
+          }
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setSpeed(selectedPlayer.getSpeed());
+        }
       }
     }
   }
