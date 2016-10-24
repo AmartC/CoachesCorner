@@ -13,26 +13,32 @@ public class Player
 {
   String name;
   ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames.
-  int speed;
+  int currentX, currentY, speed;
   Color color;
   int number;
   int diameter;
+  Point velocity;
 
   public Player(int x, int y)
   {
     name = "";
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
+    currentX = x;
+    currentY = y;
     speed = 0;
     color = Color.white;
     number = -1;
     diameter = 30;
+    velocity = new Point(0,0);
   }
 
   public Player(int x, int y, String playerName, int playerNumber, Color playerColor, int playerDiameter)
   {
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
+    currentX = x;
+    currentY = y;
     name = playerName;
     number = playerNumber;
     color = playerColor;
@@ -57,17 +63,22 @@ public class Player
 
   public int getX()
   {
-    return (positions.get(0)).getX();
+    return currentX;
   }
 
   public int getY()
   {
-    return (positions.get(0)).getY();
+    return currentY;
   }
 
   public Point getXY()
   {
-    return new Point(positions.get(0));
+    return new Point(currentX, currentY);
+  }
+  
+  public Point getVel()
+  {
+    return velocity;
   }
 
   public int getDiameter()
@@ -123,12 +134,17 @@ public class Player
 
   public void setX(int x)
   {
-    (positions.get(0)).setX(x);
+    currentX = x;
   }
 
   public void setY(int y)
   {
-    (positions.get(0)).setY(y);
+    currentY = y;
+  }
+  
+  public void setVel(Point v)
+  {
+    velocity = v;
   }
 
   public void setNumber(int playerNumber)

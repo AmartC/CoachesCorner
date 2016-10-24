@@ -27,6 +27,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
   int selectedFrame;
+  int frameTime;
+  int numberOfFrames;
 
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer;
@@ -34,8 +36,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   Team offensiveTeam;
   Team defensiveTeam;
-  JLabel frameLabel;
-  JTextField newFrame;
+  Label frameLabel;
+  TextField newFrame;
+  Button menu;
+  
+  boolean running = false;
 
   public void init()
   {
@@ -54,6 +59,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     y = (int)(ONE_YARD*15);
     x = width/2;
     selectedFrame = 0;
+    frameTime = 200;
+    numberOfFrames = 1;
 
     playerDiameter = 20;
     isMouseDraggingPlayer = false;
@@ -78,11 +85,47 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     addMouseMotionListener(this);
     
     
-    frameLabel = new JLabel("Frame");
-    newFrame = new JTextField(10);
-    this.add(frameLabel);
-    this.add(newFrame);
+    frameLabel = new Label("Frame");
+    newFrame = new TextField(10);
+    add(frameLabel);
+    add(newFrame);
+    newFrame.setText("0");
+    newFrame.addActionListener(
+      new ActionListener() 
+      {
+        public void actionPerformed(ActionEvent event) 
+        {
+            int userFrame = Integer.parseInt(newFrame.getText());
+            if(userFrame > numberOfFrames)
+            {
+              newFrame.setText(Integer.toString(numberOfFrames-1));
+              selectedFrame = numberOfFrames - 1;
+            }else{
+              if(numberOfFrames == userFrame)
+              {
+                offensiveTeam.addFrame(userFrame-1);
+                defensiveTeam.addFrame(userFrame-1);
+                numberOfFrames = numberOfFrames + 1;
+              }
+              selectedFrame = userFrame;
+            }
+        }
+      }
+    );
     
+    // Construct the button
+    Button menu = new Button("Menu");
+    this.add(menu);
+    menu.setLocation(0,0);
+    menu.addActionListener(
+      new ActionListener() 
+      {
+        public void actionPerformed(ActionEvent event) 
+        {
+            run();
+        }
+      }
+    );
   }
 
   private class MyKeyListener extends KeyAdapter
@@ -170,19 +213,27 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void handleInput()
   {
+    Point pos = selectedPlayer.getPositionAtFrame(selectedFrame);  
+      
     JPanel panel = new JPanel();
     JLabel xLabel = new JLabel("X");
     JTextField newX = new JTextField(10);
     panel.add(xLabel);
     panel.add(newX);
+    newX.setText(Integer.toString(pos.getX()));
+    
     JLabel yLabel = new JLabel("Y");
     JTextField newY = new JTextField(10);
     panel.add(yLabel);
     panel.add(newY);
+    newY.setText(Integer.toString(pos.getY()));
+    
     JLabel speedLabel = new JLabel("Speed");
     JTextField newSpeed = new JTextField(10);
     panel.add(speedLabel);
     panel.add(newSpeed);
+    newSpeed.setText(Integer.toString(selectedPlayer.getSpeed()));
+    
     int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
     {
@@ -214,7 +265,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     mx = e.getX();
     my = e.getY();
-
     if(SwingUtilities.isRightMouseButton(e))
     {
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
@@ -269,6 +319,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     if (isMouseDraggingPlayer)
     {
+      
       // get the latest mouse position
       int new_mx = e.getX();
       int new_my = e.getY();
@@ -278,6 +329,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       int playerPositionX = selectedPlayerPosition.getX();
       int playerPositionY = selectedPlayerPosition.getY();
       selectedPlayer.setPositionAtFrame(selectedFrame, playerPositionX + new_mx - mx, playerPositionY + new_my - my);
+      
+      selectedPlayer.setX(playerPositionX + new_mx - mx);
+      selectedPlayer.setY(playerPositionY + new_my - my);
 
       // update our data
       mx = new_mx;
@@ -309,8 +363,20 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void displayPlayerPositions()
   {
-    offensiveTeam.displayTeamAtFrame(gBuffer, selectedFrame);
-    defensiveTeam.displayTeamAtFrame(gBuffer, selectedFrame);
+    offensiveTeam.displayTeam(gBuffer);
+    defensiveTeam.displayTeam(gBuffer);
+  }
+  
+  public void updatePlayerPositions(int frame)
+  {
+    offensiveTeam.updateTeamAtFrame(gBuffer, frame);
+    defensiveTeam.updateTeamAtFrame(gBuffer, frame);
+  }
+  
+  public void calculateVelocity(int frame)
+  {
+    offensiveTeam.calculateVelocity(gBuffer, frame, frameTime);
+    defensiveTeam.calculateVelocity(gBuffer, frame, frameTime);
   }
 
   public void run(){
@@ -334,7 +400,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     // Interpret the user's choice
     if(choice == 0){
-      createPlay();
+      if(!running)
+      {
+        createPlay();
+      }
     }else if(choice == 1){
       runPlay();
     }else if(choice == 2){
@@ -365,7 +434,31 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
     }
   }
-  public void runPlay(){}
+  public void runPlay()
+  {
+    for(int i = 0; i < numberOfFrames - 1; i++)
+    {
+      calculateVelocity(i);
+      for(int j = 0; j < frameTime; j++)
+      {
+          try {runner.sleep(13);}
+          catch (Exception e) {}
+    
+          if(!running)
+          {
+              menu.setLocation(0,0);
+              running = true;
+          }
+    
+          paintField(gBuffer);
+          updatePlayerPositions(i);
+          offensiveTeam.displayTeam(gBuffer);
+          defensiveTeam.displayTeam(gBuffer);
+          
+          repaint();
+      }
+    }
+  }
   public void whiteBoard(){}
   public void createBook(){}
   public void loadBook(){}

@@ -121,4 +121,41 @@ public class Team
       gBuffer.fillOval(playerPosition.getX(), playerPosition.getY(), playerCircleDiameter, playerCircleDiameter);
     }
   }
+  
+  public void updateTeamAtFrame(Graphics gBuffer, int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);      
+      int playerCircleDiameter = currentPlayer.getDiameter();
+      gBuffer.setColor(color);
+      gBuffer.fillOval(currentPlayer.getX()+currentPlayer.getVel().getX(), 
+         currentPlayer.getY()+currentPlayer.getVel().getY(), 
+           playerCircleDiameter, playerCircleDiameter);
+    }
+  }
+  
+  public void calculateVelocity(Graphics gBuffer, int frame, int frameTime)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point startPos = currentPlayer.getPositionAtFrame(frame);
+      Point finalPos = currentPlayer.getPositionAtFrame(frame+1);
+      int xStep = (finalPos.getX() - startPos.getX())/frameTime;
+      int yStep = (finalPos.getY() - startPos.getY())/frameTime;
+      Point v = new Point(xStep,yStep);
+      currentPlayer.setVel(v);
+    }
+  }
+  
+  public void addFrame(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point defaultPos = currentPlayer.getPositionAtFrame(frame-1);
+      currentPlayer.addFrame(defaultPos);
+    }
+  }
 }
