@@ -213,7 +213,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           }
           else if (updatedX > width)
           {
-            updatedX = width - playerDiameter - (playerDiameter / 2);
+            updatedX = width - playerDiameter;
           }
           selectedPlayer.setX(updatedX);
         }
@@ -235,7 +235,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           }
           else if (updatedY > height)
           {
-            updatedY = height - playerDiameter - (playerDiameter / 2);
+            updatedY = height - playerDiameter;
           }
           selectedPlayer.setY(updatedY);
         }
