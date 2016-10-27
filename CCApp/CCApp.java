@@ -60,7 +60,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     x = width/2;
     selectedFrame = 0;
 
-    playerDiameter = 20;
+    playerDiameter = 30;
     isMouseDraggingPlayer = false;
     selectedPlayer = null;
 
@@ -464,11 +464,41 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       Point selectedPlayerPosition = selectedPlayer.getPositionAtFrame(selectedFrame);
       int playerPositionX = selectedPlayerPosition.getX();
       int playerPositionY = selectedPlayerPosition.getY();
-      selectedPlayer.setPositionAtFrame(selectedFrame, playerPositionX + new_mx - mx, playerPositionY + new_my - my);
 
-      // update our data
-      mx = new_mx;
-      my = new_my;
+      int newPlayerPositionX = playerPositionX + new_mx - mx;
+      int newPlayerPositionY = playerPositionY + new_my - my;
+
+      // Check if player's X coordinate is out of boundary.
+      if(newPlayerPositionX + playerDiameter > width)
+      {
+        newPlayerPositionX = width - playerDiameter;
+      }
+      else if(newPlayerPositionX < 0)
+      {
+        newPlayerPositionX = 0;
+      }
+      else
+      {
+        // update mouse X coordinate data if player is within boundary
+        mx = new_mx;
+      }
+
+      // Check if player's Y coordinate is out of boundary.
+      if(newPlayerPositionY + playerDiameter > height)
+      {
+        newPlayerPositionY = height - playerDiameter;
+      }
+      else if(newPlayerPositionY < 0)
+      {
+        newPlayerPositionY = 0;
+      }
+      else
+      {
+        // update mouse Y coordinate data if player is within boundary
+        my = new_my;
+      }
+
+      selectedPlayer.setPositionAtFrame(selectedFrame, newPlayerPositionX, newPlayerPositionY);
 
       repaint();
       e.consume();
