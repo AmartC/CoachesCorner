@@ -90,6 +90,21 @@ public class Player
       return number;
   }
 
+  // add new frame/position to player using the position from its last frame
+  public void addFrame()
+  {
+    if(positions.size() > 0)
+    {
+      Point lastFramePosition = positions.get(positions.size() - 1);
+      positions.add(new Point(lastFramePosition));
+    }
+    else
+    {
+      // if no frames, then add a new frame/postion using point (0,0)
+      positions.add(new Point(0,0));
+    }
+  }
+
   // Adds a new frame to player using given position
   public void addFrame(Point position)
   {
@@ -99,6 +114,15 @@ public class Player
   public void addFrame(int x, int y)
   {
     positions.add(new Point(x, y));
+  }
+
+  // remove last frame/position
+  public void removeLastFrame()
+  {
+    if(positions.size() > 0)
+    {
+      positions.remove(positions.size() - 1);
+    }
   }
 
   public void setPositionAtFrame(int frame, Point position)

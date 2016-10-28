@@ -27,6 +27,14 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int x, y;
   int mx, my;  // the most recently recorded mouse coordinates
   int selectedFrame;
+  int numberOfFrames;
+
+  JLabel frameLabel;
+  JTextField newFrame;
+  int frameButtonSize;
+  int frameButtonIndentation;
+  int frameMenuPositionX;
+  int frameMenuPositionY;
 
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw; // various booleans for things
@@ -39,8 +47,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Player selectedPlayer;  // The player that has been clicked on
   Team offensiveTeam;
   Team defensiveTeam;
-  JLabel frameLabel;
-  JTextField newFrame;
+
 
   public void init()
   {
@@ -59,6 +66,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     y = (int)(ONE_YARD*15);
     x = width/2;
     selectedFrame = 0;
+    numberOfFrames = 0;
 
     playerDiameter = 30;
     isMouseDraggingPlayer = false;
@@ -87,6 +95,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     newFrame = new JTextField(10);
     this.add(frameLabel);
     this.add(newFrame);
+    frameButtonSize = 25;
+    frameButtonIndentation = 10;
+    frameMenuPositionX = 20;
+    frameMenuPositionY = height - frameButtonSize - 20;
 
   }
 
@@ -284,6 +296,58 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       frees.add(circ);
       circ.clear();
     }  */
+
+    mx = e.getX();
+    my = e.getY();
+
+    // Calculate position of the remove frame button
+    int minusFrameButtonX = frameMenuPositionX;
+    int minusFrameButtonY = frameMenuPositionY - frameButtonSize - frameButtonIndentation;
+
+    // Check if the remove frame button has been clicked on
+    if (numberOfFrames > 0 && (minusFrameButtonX < mx && mx < minusFrameButtonX + frameButtonSize && minusFrameButtonY < my && my < minusFrameButtonY + frameButtonSize))
+    {
+      offensiveTeam.removeLastFrameFromPlayers();
+      defensiveTeam.removeLastFrameFromPlayers();
+
+      // Check if the current frame being viewed is getting removed
+      if(selectedFrame >= numberOfFrames)
+      {
+        selectedFrame = numberOfFrames - 1;
+      }
+      numberOfFrames--;
+    }
+
+    // Calculate position of the add frame button
+    int plusFrameButtonX = frameMenuPositionX + frameButtonSize + frameButtonIndentation;
+    int plusFrameButtonY = frameMenuPositionY - frameButtonSize - frameButtonIndentation;
+
+    // Check if the add frame button has been clicked on
+    if (plusFrameButtonX < mx && mx < plusFrameButtonX + frameButtonSize && plusFrameButtonY < my && my < plusFrameButtonY + frameButtonSize)
+    {
+      offensiveTeam.addNewFrameToPlayers();
+      defensiveTeam.addNewFrameToPlayers();
+      numberOfFrames++;
+    }
+
+    // Used for X position of each frame number botton
+    int indentationX = frameMenuPositionX;
+    for(int i = 0; i <= numberOfFrames; i++)
+    {
+      // Calculate position of the frame number button
+      int numberFrameButtonX = indentationX;
+      int numberFrameButtonY = frameMenuPositionY;
+
+      // Check if the frame number button has been clicked on
+      if (numberFrameButtonX < mx && mx < numberFrameButtonX + frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + frameButtonSize)
+      {
+        selectedFrame = i;
+        break;
+      }
+
+      // Calculate X position of next frame number button
+      indentationX += frameButtonSize + frameButtonIndentation;
+    }
   }
 
   public void mousePressed(MouseEvent e)
@@ -535,6 +599,40 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     defensiveTeam.displayTeamAtFrame(gBuffer, selectedFrame);
   }
 
+  public void displayFrameMenu()
+  {
+    // Used for positioning of frame label
+    int centerOfButton = frameButtonSize / 2;
+
+    // Draw the remove ("-") frame button
+    gBuffer.setColor(Color.gray);
+    gBuffer.fillRect(frameMenuPositionX, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
+    gBuffer.setColor(Color.white);
+    gBuffer.drawString("-", frameMenuPositionX + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
+
+    // Draw the add ("+") frame button
+    gBuffer.setColor(Color.gray);
+    gBuffer.fillRect(frameMenuPositionX + frameButtonSize + frameButtonIndentation, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
+    gBuffer.setColor(Color.white);
+    gBuffer.drawString("+", frameMenuPositionX + frameButtonSize + frameButtonIndentation + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
+
+    // Used for X position of each frame number botton
+    int indentationX = frameMenuPositionX;
+    for(int i = 0; i <= numberOfFrames; i++)
+    {
+      // Draw frame number button
+      gBuffer.setColor(Color.white);
+      gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize, frameButtonSize);
+
+      // Label the frame number button
+      gBuffer.setColor(Color.black);
+      gBuffer.drawString("" + i, indentationX + centerOfButton, frameMenuPositionY + centerOfButton);
+
+      // Calculate X position of next frame number button
+      indentationX += frameButtonSize + frameButtonIndentation;
+    }
+  }
+
   public void drawLines(){
     gBuffer.setColor(Color.YELLOW);
     // draw straight lines
@@ -656,6 +754,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       //gBuffer.drawImage(football, x, y, this);
 
       paintField(gBuffer);
+      displayFrameMenu();
       displayPlayerPositions();
 
       repaint();
