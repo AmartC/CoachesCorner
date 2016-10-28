@@ -54,6 +54,24 @@ public class Team
     return newPlayer;
   }
 
+  // iterate through each player and add new frame to each player
+  public void addNewFrameToPlayers()
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      (players.get(i)).addFrame();
+    }
+  }
+
+  // iterate through each player and remove last frame from each player
+  public void removeLastFrameFromPlayers()
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      (players.get(i)).removeLastFrame();
+    }
+  }
+
   // Return the player object located at target location, otherwise return null if no player on team is at target location
   public Player findPlayerAtPoint(Point target)
   {
