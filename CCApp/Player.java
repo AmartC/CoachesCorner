@@ -17,7 +17,8 @@ public class Player
   Color color;
   int number;
   int diameter;
-  Point velocity;
+  double velocityX;
+  double velocityY;
 
   public Player(int x, int y)
   {
@@ -30,7 +31,8 @@ public class Player
     color = Color.white;
     number = -1;
     diameter = 30;
-    velocity = new Point(0,0);
+    velocityX = 0;
+    velocityY = 0;
   }
 
   public Player(int x, int y, String playerName, int playerNumber, Color playerColor, int playerDiameter)
@@ -76,9 +78,14 @@ public class Player
     return new Point(currentX, currentY);
   }
   
-  public Point getVel()
+  public double getVelX()
   {
-    return velocity;
+    return velocityX;
+  }
+  
+  public double getVelY()
+  {
+    return velocityY;
   }
 
   public int getDiameter()
@@ -142,9 +149,16 @@ public class Player
     currentY = y;
   }
   
-  public void setVel(Point v)
+  public void setXY(Point pos)
   {
-    velocity = v;
+    currentX = pos.getX();
+    currentY = pos.getY();
+  }
+  
+  public void setVel(double x, double y)
+  {
+    velocityX = x;
+    velocityY = y;
   }
 
   public void setNumber(int playerNumber)

@@ -122,30 +122,26 @@ public class Team
     }
   }
   
-  public void updateTeamAtFrame(Graphics gBuffer, int frame)
+  public void updateTeamAtFrame(int frame, int step)
   {
     for(int i = 0; i < players.size(); i++)
     {
       Player currentPlayer = players.get(i);      
-      int playerCircleDiameter = currentPlayer.getDiameter();
-      gBuffer.setColor(color);
-      gBuffer.fillOval(currentPlayer.getX()+currentPlayer.getVel().getX(), 
-         currentPlayer.getY()+currentPlayer.getVel().getY(), 
-           playerCircleDiameter, playerCircleDiameter);
+      currentPlayer.setX((int)(currentPlayer.getPositionAtFrame(frame).getX()+step*currentPlayer.getVelX())); 
+      currentPlayer.setY((int)(currentPlayer.getPositionAtFrame(frame).getY()+step*currentPlayer.getVelY()));
     }
   }
   
-  public void calculateVelocity(Graphics gBuffer, int frame, int frameTime)
+  public void calculateVelocity(int frame, int frameTime)
   {
     for(int i = 0; i < players.size(); i++)
     {
       Player currentPlayer = players.get(i);
       Point startPos = currentPlayer.getPositionAtFrame(frame);
       Point finalPos = currentPlayer.getPositionAtFrame(frame+1);
-      int xStep = (finalPos.getX() - startPos.getX())/frameTime;
-      int yStep = (finalPos.getY() - startPos.getY())/frameTime;
-      Point v = new Point(xStep,yStep);
-      currentPlayer.setVel(v);
+      double xStep = ((double)finalPos.getX() - (double)startPos.getX())/((double)frameTime);
+      double yStep = ((double)finalPos.getY() - (double)startPos.getY())/((double)frameTime);
+      currentPlayer.setVel(xStep,yStep);
     }
   }
   
@@ -156,6 +152,16 @@ public class Team
       Player currentPlayer = players.get(i);
       Point defaultPos = currentPlayer.getPositionAtFrame(frame-1);
       currentPlayer.addFrame(defaultPos);
+    }
+  }
+  
+  public void setPositions(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point startingPos = currentPlayer.getPositionAtFrame(frame);
+      currentPlayer.setXY(startingPos);
     }
   }
 }

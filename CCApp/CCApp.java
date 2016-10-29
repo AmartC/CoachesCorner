@@ -13,7 +13,7 @@ import java.applet.*;
 import java.net.URL;
 import javax.imageio.ImageIO;
 
-public class CCApp extends Applet implements Runnable, MouseListener, MouseMotionListener
+public class CCApp extends Applet implements Runnable, MouseListener, MouseMotionListener, ActionListener
 {
   Thread runner;
   Image Buffer;
@@ -59,7 +59,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     y = (int)(ONE_YARD*15);
     x = width/2;
     selectedFrame = 0;
-    frameTime = 200;
+    frameTime = 400;
     numberOfFrames = 1;
 
     playerDiameter = 20;
@@ -90,28 +90,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     add(frameLabel);
     add(newFrame);
     newFrame.setText("0");
-    newFrame.addActionListener(
-      new ActionListener() 
-      {
-        public void actionPerformed(ActionEvent event) 
-        {
-            int userFrame = Integer.parseInt(newFrame.getText());
-            if(userFrame > numberOfFrames)
-            {
-              newFrame.setText(Integer.toString(numberOfFrames-1));
-              selectedFrame = numberOfFrames - 1;
-            }else{
-              if(numberOfFrames == userFrame)
-              {
-                offensiveTeam.addFrame(userFrame-1);
-                defensiveTeam.addFrame(userFrame-1);
-                numberOfFrames = numberOfFrames + 1;
-              }
-              selectedFrame = userFrame;
-            }
-        }
-      }
-    );
+    newFrame.addActionListener(this);
     
     // Construct the button
     Button menu = new Button("Menu");
@@ -122,10 +101,30 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       {
         public void actionPerformed(ActionEvent event) 
         {
-            run();
+            running = false;
         }
       }
     );
+  }
+  
+  public void actionPerformed(ActionEvent event) 
+  {
+    int userFrame = Integer.parseInt(newFrame.getText());
+    if(userFrame > numberOfFrames)
+    {
+      newFrame.setText(Integer.toString(numberOfFrames-1));
+      selectedFrame = numberOfFrames - 1;
+    }else{
+      if(numberOfFrames == userFrame)
+      {
+        offensiveTeam.addFrame(userFrame);
+        defensiveTeam.addFrame(userFrame);
+        numberOfFrames = numberOfFrames + 1;
+      }
+      offensiveTeam.setPositions(userFrame);
+      defensiveTeam.setPositions(userFrame);
+      selectedFrame = userFrame;
+    }
   }
 
   private class MyKeyListener extends KeyAdapter
@@ -367,67 +366,72 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     defensiveTeam.displayTeam(gBuffer);
   }
   
-  public void updatePlayerPositions(int frame)
+  public void updatePlayerPositions(int frame, int frameStep)
   {
-    offensiveTeam.updateTeamAtFrame(gBuffer, frame);
-    defensiveTeam.updateTeamAtFrame(gBuffer, frame);
+    offensiveTeam.updateTeamAtFrame(frame, frameStep);
+    defensiveTeam.updateTeamAtFrame(frame, frameStep);
   }
   
   public void calculateVelocity(int frame)
   {
-    offensiveTeam.calculateVelocity(gBuffer, frame, frameTime);
-    defensiveTeam.calculateVelocity(gBuffer, frame, frameTime);
+    offensiveTeam.calculateVelocity(frame, frameTime);
+    defensiveTeam.calculateVelocity(frame, frameTime);
   }
 
   public void run(){
-    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
-    String[] options = new String[] {"Create a Play",
-      "Run a Play",
-      "Whiteboard Mode",
-      "Create Playbook",
-      "Load Playbook",
-      "Export Playbook",
-      "View Tutorials"};
-    // Get choice from user
-    int choice = JOptionPane.showOptionDialog(null,
-      "Welcome to Coach's Corner!",
-      "CCApp",
-      JOptionPane.DEFAULT_OPTION,
-      JOptionPane.INFORMATION_MESSAGE,
-      icon,
-      options,
-      options[6]);
-
-    // Interpret the user's choice
-    if(choice == 0){
-      if(!running)
-      {
-        createPlay();
-      }
-    }else if(choice == 1){
-      runPlay();
-    }else if(choice == 2){
-      whiteBoard();
-    }else if(choice == 3){
-      createBook();
-    }else if(choice == 4){
-      loadBook();
-    }else if(choice == 5){
-      exportBook();
-    }else if(choice == 6){
-      viewTutorial();
+    boolean menuOn = true;
+    while(menuOn)
+    {
+        ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
+        String[] options = new String[] {"Create a Play",
+          "Run a Play",
+          "Whiteboard Mode",
+          "Create Playbook",
+          "Load Playbook",
+          "Export Playbook",
+          "View Tutorials"};
+        // Get choice from user
+        int choice = JOptionPane.showOptionDialog(null,
+          "Welcome to Coach's Corner!",
+          "CCApp",
+          JOptionPane.DEFAULT_OPTION,
+          JOptionPane.INFORMATION_MESSAGE,
+          icon,
+          options,
+          options[6]);
+    
+        running = true;
+        // Interpret the user's choice
+        if(choice == 0){
+          createPlay();
+        }else if(choice == 1){
+          runPlay();
+        }else if(choice == 2){
+          whiteBoard();
+        }else if(choice == 3){
+          createBook();
+        }else if(choice == 4){
+          loadBook();
+        }else if(choice == 5){
+          exportBook();
+        }else if(choice == 6){
+          viewTutorial();
+        } else {
+          menuOn = false;
+        }        
     }
   }
 
   public void createPlay()
   {
-    while(true)
+    newFrame.setText("0");
+    offensiveTeam.setPositions(0);
+    defensiveTeam.setPositions(0);
+    while(running)
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
-
-      //gBuffer.drawImage(football, x, y, this);
-
+      
       paintField(gBuffer);
       displayPlayerPositions();
 
@@ -435,27 +439,23 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
   public void runPlay()
-  {
+  {    
     for(int i = 0; i < numberOfFrames - 1; i++)
     {
+      offensiveTeam.setPositions(i);
+      defensiveTeam.setPositions(i);
       calculateVelocity(i);
+      newFrame.setText(Integer.toString(i));
       for(int j = 0; j < frameTime; j++)
       {
-          try {runner.sleep(13);}
-          catch (Exception e) {}
-    
-          if(!running)
-          {
-              menu.setLocation(0,0);
-              running = true;
-          }
-    
-          paintField(gBuffer);
-          updatePlayerPositions(i);
-          offensiveTeam.displayTeam(gBuffer);
-          defensiveTeam.displayTeam(gBuffer);
-          
-          repaint();
+        try {runner.sleep(13);}
+        catch (Exception e) {}
+        updatePlayerPositions(i,j);
+        
+        paintField(gBuffer);
+        displayPlayerPositions();
+
+        repaint();
       }
     }
   }
