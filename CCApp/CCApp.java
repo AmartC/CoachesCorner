@@ -40,7 +40,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   TextField newFrame;
   Button menu;
   
-  boolean running = false;
+  boolean running, animating;
+  
 
   public void init()
   {
@@ -61,6 +62,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     selectedFrame = 0;
     frameTime = 400;
     numberOfFrames = 1;
+    
+    running = false;
+    animating = false;
 
     playerDiameter = 20;
     isMouseDraggingPlayer = false;
@@ -262,45 +266,48 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void mousePressed(MouseEvent e)
   {
-    mx = e.getX();
-    my = e.getY();
-    if(SwingUtilities.isRightMouseButton(e))
+    if(!animating)
     {
-      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
-      if(newSelectedPlayer != null)
-      {
-        selectedPlayer = newSelectedPlayer;
-        this.handleInput();
-      }
-      else
-      {
-        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
-        if(newSelectedPlayer != null)
+        mx = e.getX();
+        my = e.getY();
+        if(SwingUtilities.isRightMouseButton(e))
         {
-          selectedPlayer = newSelectedPlayer;
-          this.handleInput();
+          Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+          if(newSelectedPlayer != null)
+          {
+            selectedPlayer = newSelectedPlayer;
+            this.handleInput();
+          }
+          else
+          {
+            newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+            if(newSelectedPlayer != null)
+            {
+              selectedPlayer = newSelectedPlayer;
+              this.handleInput();
+            }
+          }
         }
-      }
-    }
-    else
-    {
-      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
-      if(newSelectedPlayer != null)
-      {
-        isMouseDraggingPlayer = true;
-        selectedPlayer = newSelectedPlayer;
-      }
-
-      // If mouse did not click on an offensive player, then check the defensive players
-      if(!isMouseDraggingPlayer)
-      {
-        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
-        if(newSelectedPlayer != null)
+        else
         {
-          isMouseDraggingPlayer = true;
-          selectedPlayer = newSelectedPlayer;
+          Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+          if(newSelectedPlayer != null)
+          {
+            isMouseDraggingPlayer = true;
+            selectedPlayer = newSelectedPlayer;
+          }
+    
+          // If mouse did not click on an offensive player, then check the defensive players
+          if(!isMouseDraggingPlayer)
+          {
+            newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+            if(newSelectedPlayer != null)
+            {
+              isMouseDraggingPlayer = true;
+              selectedPlayer = newSelectedPlayer;
+            }
+          }
         }
-      }
     }
 
     e.consume();
@@ -316,7 +323,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   public void mouseDragged(MouseEvent e)
   {
-    if (isMouseDraggingPlayer)
+    if (isMouseDraggingPlayer && !animating)
     {
       
       // get the latest mouse position
@@ -427,6 +434,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     newFrame.setText("0");
     offensiveTeam.setPositions(0);
     defensiveTeam.setPositions(0);
+    selectedFrame = 0;
     while(running)
     {
       try {runner.sleep(13);}
@@ -440,6 +448,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   }
   public void runPlay()
   {    
+    animating = true;
     for(int i = 0; i < numberOfFrames - 1; i++)
     {
       offensiveTeam.setPositions(i);
@@ -458,6 +467,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         repaint();
       }
     }
+    animating = false;
   }
   public void whiteBoard(){}
   public void createBook(){}
