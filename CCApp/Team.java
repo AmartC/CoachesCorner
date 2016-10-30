@@ -139,4 +139,47 @@ public class Team
       gBuffer.fillOval(playerPosition.getX(), playerPosition.getY(), playerCircleDiameter, playerCircleDiameter);
     }
   }
+  
+  public void updateTeamAtFrame(int frame, int step)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);      
+      currentPlayer.setX((int)(currentPlayer.getPositionAtFrame(frame).getX()+step*currentPlayer.getVelX())); 
+      currentPlayer.setY((int)(currentPlayer.getPositionAtFrame(frame).getY()+step*currentPlayer.getVelY()));
+    }
+  }
+  
+  public void calculateVelocity(int frame, int frameTime)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point startPos = currentPlayer.getPositionAtFrame(frame);
+      Point finalPos = currentPlayer.getPositionAtFrame(frame+1);
+      double xStep = ((double)finalPos.getX() - (double)startPos.getX())/((double)frameTime);
+      double yStep = ((double)finalPos.getY() - (double)startPos.getY())/((double)frameTime);
+      currentPlayer.setVel(xStep,yStep);
+    }
+  }
+  
+  public void addFrame(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point defaultPos = currentPlayer.getPositionAtFrame(frame-1);
+      currentPlayer.addFrame(defaultPos);
+    }
+  }
+  
+  public void setPositions(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      Point startingPos = currentPlayer.getPositionAtFrame(frame);
+      currentPlayer.setXY(startingPos);
+    }
+  }
 }
