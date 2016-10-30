@@ -73,7 +73,7 @@ public class Team
   }
 
   // Return the player object located at target location, otherwise return null if no player on team is at target location
-  public Player findPlayerAtPoint(Point target)
+  public Player findPlayerAtPoint(Point target, int frame)
   {
     int targetX = target.getX();
     int targetY = target.getY();
@@ -81,8 +81,9 @@ public class Team
     for(int i = 0; i < players.size(); i++)
     {
       Player currentPlayer = players.get(i);
-      int playerPositionX = currentPlayer.getX();
-      int playerPositionY = currentPlayer.getY();
+      Point playerPosition = currentPlayer.getPositionAtFrame(frame);
+      int playerPositionX = playerPosition.getX();
+      int playerPositionY = playerPosition.getY();
       int playerCircleDiameter = currentPlayer.getDiameter();
 
       if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)
@@ -94,7 +95,7 @@ public class Team
     return null;
   }
 
-  public Player findPlayerAtPoint(int x, int y)
+  public Player findPlayerAtPoint(int x, int y, int frame)
   {
     int targetX = x;
     int targetY = y;
@@ -102,8 +103,9 @@ public class Team
     for(int i = 0; i < players.size(); i++)
     {
       Player currentPlayer = players.get(i);
-      int playerPositionX = currentPlayer.getX();
-      int playerPositionY = currentPlayer.getY();
+      Point playerPosition = currentPlayer.getPositionAtFrame(frame);
+      int playerPositionX = playerPosition.getX();
+      int playerPositionY = playerPosition.getY();
       int playerCircleDiameter = currentPlayer.getDiameter();
 
       if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)

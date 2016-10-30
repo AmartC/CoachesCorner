@@ -348,6 +348,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       // Calculate X position of next frame number button
       indentationX += frameButtonSize + frameButtonIndentation;
     }
+
+    e.consume();
   }
 
   public void mousePressed(MouseEvent e)
@@ -434,7 +436,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
     if(SwingUtilities.isRightMouseButton(e) && !markerMode)
     {
-      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my, selectedFrame);
       if(newSelectedPlayer != null)
       {
         selectedPlayer = newSelectedPlayer;
@@ -442,7 +444,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
       else
       {
-        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my, selectedFrame);
         if(newSelectedPlayer != null)
         {
           selectedPlayer = newSelectedPlayer;
@@ -466,7 +468,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
       else
       {
-          Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
+          Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my, selectedFrame);
           if(newSelectedPlayer != null)
           {
             isMouseDraggingPlayer = true;
@@ -476,7 +478,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           // If mouse did not click on an offensive player, then check the defensive players
           if(!isMouseDraggingPlayer)
           {
-            newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
+            newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my, selectedFrame);
             if(newSelectedPlayer != null)
             {
               isMouseDraggingPlayer = true;
