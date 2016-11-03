@@ -13,48 +13,55 @@ import java.applet.*;
 import java.net.URL;
 import javax.imageio.ImageIO;
 
+
+/**
+ * The CCApp class is the "brain" of the application.
+ * Runs application and manages/displays all GUI interactions.
+ */
 public class CCApp extends Applet implements Runnable, MouseListener, MouseMotionListener
 {
-  Thread runner;
-  Image Buffer;
-  Graphics gBuffer;
-  int width, height;
-  boolean rightKey, leftKey, upKey, downKey;
+  Thread runner;  // Main thread running the applet
+  Image Buffer; // Used to paint all graphics onto window
+  Graphics gBuffer; // Used to manage what is displayed
+  int width, height;  // Width and height of applet window
+  boolean rightKey, leftKey, upKey, downKey;  // Used for keyboard controls (currently not used)
 
-  double ONE_YARD;
+  double ONE_YARD;  // Stores how many pixels are in a yard on field
   int CENTER_OF_FIELD;
 
-  int x, y;
+  int x, y; // Used for positioning of certain objects on field
   int mx, my;  // the most recently recorded mouse coordinates
-  int selectedFrame;
-  int numberOfFrames;
-  int frameTime;
+  int selectedFrame;  // Holds the number of current frame selected by user
+  int numberOfFrames; // Total number of frames in animation
+  int frameTime;  //
 
-  JLabel frameLabel;
-  JTextField newFrame;
-  int frameButtonSize;
+  JLabel frameLabel;  // Previously used for labeling a textfield (not used anymore)
+  JTextField newFrame;  // Previously used for adding textfield to modify frames (not used anymore)
+
+  int frameButtonSize;  // These are used to position the frame menu buttons
   int frameButtonIndentation;
   int frameMenuPositionX;
   int frameMenuPositionY;
 
   int playerDiameter;   // Player's circle/dot diameter
-  boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for things
+  boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
   ArrayList<Point> paint_coords; // coordinates for drawing straight lines
   ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
   ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
   ArrayList<ArrayList<Integer>> frees = new ArrayList<ArrayList<Integer>>();
 
-  Player selectedPlayer;  // The player that has been clicked on
+  Player selectedPlayer;  // The player that has been most recently clicked on
   Team offensiveTeam;
   Team defensiveTeam;
 
 
+  /**
+   * Function called when applet starts up.
+   * Initializes all global variables
+   */
   public void init()
   {
-    //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    //width = (int)screenSize.getWidth();
-    //height = (int)screenSize.getHeight();
     width=this.getSize().width;
     height=this.getSize().height;
     Buffer=createImage(width,height);
@@ -69,7 +76,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     selectedFrame = 0;
     frameTime = 400;
     numberOfFrames = 1;
-    
+
     running = false;
     animating = false;
 
@@ -80,18 +87,19 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     offensiveTeam = new Team("Offense", Color.red);
     defensiveTeam = new Team("Defensive", Color.blue);
 
+    // Create players and add them to each team. Position them near center of field (for now)
     for(int a = 0; a < 11; a++)
     {
       Player c = new Player(x + (25 * (a - 5)) - 20, y - 20);
       offensiveTeam.addPlayer(c);
     }
-
     for(int b = 0; b < 11; b++)
     {
       Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
       defensiveTeam.addPlayer(c);
     }
 
+    // Add mouse listeners to detect mouse interactions
     addMouseListener(this);
     addMouseMotionListener(this);
 
@@ -103,23 +111,27 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     frameButtonSize = 25;
     frameButtonIndentation = 10;
     frameMenuPositionX = 20;
-	// Construct the button
+
+    // Construct the menu button
     Button menu = new Button("Menu");
     this.add(menu);
     menu.setLocation(0,0);
     menu.addActionListener(
-      new ActionListener() 
+      new ActionListener()
       {
-        public void actionPerformed(ActionEvent event) 
+        public void actionPerformed(ActionEvent event)
         {
             running = false;
         }
       }
     );
     frameMenuPositionY = height - frameButtonSize - 20;
-
   }
 
+
+  /**
+   * Class used for detection of keyboard interactions (currently not used)
+   */
   private class MyKeyListener extends KeyAdapter
   {
     public void keyPressed(KeyEvent e)
@@ -153,6 +165,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
 
+    /**
+     * Another class used for detection of keyboard interactions (currently not used)
+     */
     public void keyReleased(KeyEvent e)
     {
       switch (e.getKeyCode())
@@ -185,6 +200,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function responsible for starting the applet thread.
+   */
   public void start()
   {
     if (runner == null)
@@ -194,6 +212,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function responsible for stopping the applet thread (apparently deprecated)
+   */
   public void stop()
   {
     if (runner != null)
@@ -203,33 +224,45 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function responsible for handling the event when a user
+   * right clicks on a player on field.
+   * Essentially allows users to modify attributes of the player
+   * object.
+   */
   public void handleInput()
   {
+    // Set up a JOptionPane (pop up dialog) with three
+    // textfield that will allow user to change player
+    // member variables
     JPanel panel = new JPanel();
+
     JLabel xLabel = new JLabel("X");
     JTextField newX = new JTextField(10);
     Point playerPoints = selectedPlayer.getPositionAtFrame(selectedFrame);
-    //newX.setText(String.valueOf(selectedPlayer.getX()));
     newX.setText(String.valueOf(playerPoints.getX()));
     panel.add(xLabel);
     panel.add(newX);
+
     JLabel yLabel = new JLabel("Y");
     JTextField newY = new JTextField(10);
-    //newY.setText(String.valueOf(selectedPlayer.getY()));
     newY.setText(String.valueOf(playerPoints.getY()));
     panel.add(yLabel);
     panel.add(newY);
+
     JLabel speedLabel = new JLabel("Speed");
     JTextField newSpeed = new JTextField(10);
     newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
     panel.add(speedLabel);
     panel.add(newSpeed);
+
     int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
     {
       int updatedX = playerPoints.getX();
       int updatedY = playerPoints.getY();
       int updatedSpeed = selectedPlayer.getSpeed();
+
       // OK was pressed
       if(newX.getText().replaceAll("\\s","").length() != 0)
       {
@@ -295,18 +328,30 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
   }
+
+  /**
+   * Function that detects
+   */
   public boolean mouseDown(Event evt,int x,int y)
   {
     return true;
   }
 
+  /**
+   * Function that detects when mouse/cursor has entered the window.
+   */
   public void mouseEntered(MouseEvent e) {}
 
+  /**
+   * Function that detects when mouse/cursor has left the window.
+   */
   public void mouseExited(MouseEvent e) {}
 
+  /**
+   * Function that detects when mouse/cursor has pressed and released.
+   */
   public void mouseClicked(MouseEvent e) {
-  // NEED TO FIGURE OUT
-
+    // NEED TO FIGURE OUT
     /*if(markerMode && freeDraw){
       ArrayList<Integer> circ = new ArrayList<Integer>();
       circ.add(mx-2);
@@ -315,6 +360,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       circ.clear();
     }  */
 
+    // Grab mouse coordinates
     mx = e.getX();
     my = e.getY();
 
@@ -333,7 +379,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       {
         selectedFrame = numberOfFrames - 2;
       }
-      
+
 	  offensiveTeam.setPositions(selectedFrame);
       defensiveTeam.setPositions(selectedFrame);
       numberOfFrames--;
@@ -374,12 +420,17 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function that detects when mouse has been pressed by user.
+   */
   public void mousePressed(MouseEvent e)
   {
+    // Grab mouse coordinates
     mx = e.getX();
     my = e.getY();
 
-    // booleans for different draw modes (buttons)
+    // Booleans for different draw modes (buttons)
+    // Check if whiteboard mode has been selected
     if(whiteBoardMode)
     {
       // Marker Mode on/off
@@ -395,7 +446,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         squares.clear();
         circles.clear();
       }
-      // Draw Line on/off
+      // Toggle draw Line mode on/off
       if(mx >= 5 && mx <= 55 && my > 58 && my <= 108 && markerMode)
       {
         if(!lineDraw)
@@ -410,7 +461,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
            lineDraw = false;
         }
       }
-      // Draw Free on/off
+      // Toggle draw Free mode on/off
       if(mx >= 5 && mx <= 55 && my >= 111 && my <= 161 && markerMode)
       {
         if(!freeDraw)
@@ -425,7 +476,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
            freeDraw = false;
         }
       }
-      // Draw Square on/off
+      // Toggle draw Square on/off
       if(mx >= 58 && mx <= 108 && my >= 58 && my <= 108 && markerMode)
       {
         if(!sqDraw)
@@ -440,7 +491,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           sqDraw = false;
         }
       }
-      // Draw Circle on/off
+      // Toggle draw Circle on/off
       if(mx >= 58 && mx <= 108 && my >= 111 && my <= 161 && markerMode)
       {
         if(!circDraw)
@@ -456,43 +507,57 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     }
+
+    // If marker mode is off and user right clicks
     if(SwingUtilities.isRightMouseButton(e) && !markerMode)
     {
+      // Find the player on offensive team that was right clicked on
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
-      if(newSelectedPlayer != null)
+      if(newSelectedPlayer != null) // A player on offensive team was right clicked on
       {
+        // Keep track of player that was recently clicked on
         selectedPlayer = newSelectedPlayer;
+        // Delegate work
         this.handleInput();
       }
-      else
+      else  // A player on offensive team that was NOT clicked on
       {
+        // Find the player on defensive team team that was right clicked on
         newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
-        if(newSelectedPlayer != null)
+        if(newSelectedPlayer != null) // A player on Defensive team was right clicked on
         {
+          // Keep track of player that was recently clicked on
           selectedPlayer = newSelectedPlayer;
+          // Delegate work
           this.handleInput();
         }
       }
     }
     else
     {
+      // If user clicked on screen while marker mode was on
       if(markerMode){
+          // If in draw line mode
           if(lineDraw)
           {
+            // Store where user clicked
             paint_coords = new ArrayList<Point>();
             paint_coords.add(new Point(mx, my));
           }
-          else if(sqDraw || circDraw)
+          else if(sqDraw || circDraw) // If draw square or circle mode is on
           {
+            // Store where user clicked
             paint_coords = new ArrayList<Point>();
             paint_coords.add(new Point(mx, my));
           }
       }
-      else
+      else  // If user clicked on screen while marker mode was off
       {
+          // Find the player on offensive team that was right clicked on
           Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(mx, my);
-          if(newSelectedPlayer != null)
+          if(newSelectedPlayer != null) // A player was clicked on
           {
+            // Note that mouse may start to drag
             isMouseDraggingPlayer = true;
             selectedPlayer = newSelectedPlayer;
           }
@@ -500,9 +565,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           // If mouse did not click on an offensive player, then check the defensive players
           if(!isMouseDraggingPlayer)
           {
+            // Find the player on defensive team that was right clicked on
             newSelectedPlayer = defensiveTeam.findPlayerAtPoint(mx, my);
-            if(newSelectedPlayer != null)
+            if(newSelectedPlayer != null) // A player was clicked on
             {
+              // Note that mouse may start to drag
               isMouseDraggingPlayer = true;
               selectedPlayer = newSelectedPlayer;
             }
@@ -510,12 +577,18 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
 
+    // Mouse press event has passed
     e.consume();
   }
 
+  /**
+   * Function that detects when mouse has been released by user.
+   */
   public void mouseReleased(MouseEvent e)
   {
     isMouseDraggingPlayer = false;
+
+    // If marker and draw line mode were on, then keep track of point of release
     if(markerMode && lineDraw)
     {
       paint_coords.add(new Point(e.getX(), e.getY()));
@@ -525,7 +598,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       lines.add(new_line);
       paint_coords.clear();
     }
-    else if(markerMode && (sqDraw || circDraw))
+    else if(markerMode && (sqDraw || circDraw)) // If marker and draw circle/square mode were on, then keep track of point of release
     {
       paint_coords.add(new Point(e.getX(), e.getY()));
       Point start_point = paint_coords.get(0);
@@ -535,13 +608,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       else circles.add(new_line);
       paint_coords.clear();
     }
+
     e.consume();
   }
 
+  /**
+   * Function that detects when mouse/cursor has been moved by user.
+   */
   public void mouseMoved(MouseEvent e) {}
 
+  /**
+   * Function that detects when mouse/cursor has been pressed and dragged by user.
+   */
   public void mouseDragged(MouseEvent e)
   {
+    // If applet is not animating and user is dragging a player
     if (isMouseDraggingPlayer && !animating)
     {
       // get the latest mouse position
@@ -586,18 +667,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         my = new_my;
       }
 
+      // Set player's new position based on where it was dragged
       selectedPlayer.setPositionAtFrame(selectedFrame, newPlayerPositionX, newPlayerPositionY);
       selectedPlayer.setX(newPlayerPositionX);
       selectedPlayer.setY(newPlayerPositionY);
 
+      // Repaint graphics to display movement of player
       repaint();
+
       e.consume();
     }
-
-
-
   }
 
+  /**
+   * Function used to paint or draw the football field in the background
+   */
   public void paintField(Graphics gBuffer)
   {
     gBuffer.setColor(new Color(25,150,10));
@@ -619,12 +703,18 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function that displays the players in both teams at their curret position.
+   */
   public void displayPlayerPositions()
   {
     offensiveTeam.displayTeam(gBuffer);
     defensiveTeam.displayTeam(gBuffer);
   }
 
+  /**
+   * Function that displays the frame memu.
+   */
   public void displayFrameMenu()
   {
     // Used for positioning of frame label
@@ -659,6 +749,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
+  /**
+   * Function that displays the lines that have been drawn by the user.
+   */
   public void drawLines(){
     gBuffer.setColor(Color.YELLOW);
     // draw straight lines
@@ -732,24 +825,37 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       else gBuffer.drawOval(x1,y1,width,height);
     }
   }
-  
+
+  /**
+   * Function used for animation that updates the players'
+   * position based on its current velocity
+   */
   public void updatePlayerPositions(int frame, int frameStep)
   {
     offensiveTeam.updateTeamAtFrame(frame, frameStep);
     defensiveTeam.updateTeamAtFrame(frame, frameStep);
   }
-  
+
+  /**
+   * Function used for animation that updates the players'
+   * velocity based on the position of the frame they're in.
+   */
   public void calculateVelocity(int frame)
   {
     offensiveTeam.calculateVelocity(frame, frameTime);
     defensiveTeam.calculateVelocity(frame, frameTime);
   }
 
+  /**
+   * Main function that is continuously called when
+   * applet is running.
+   */
   public void run()
   {
+    // Display main menu at start of application
     boolean menuOn = true;
     while(menuOn)
-	{
+    {
 	    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
 	    String[] options = new String[] {"Create a Play",
 	      "Run a Play",
@@ -769,6 +875,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      options[6]);
 
 	    running = true;
+
 	    // Interpret the user's choice
 	    if(choice == 0){
 	      createPlay();
@@ -784,19 +891,23 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      exportBook();
 	    }else if(choice == 6){
 	      viewTutorial();
-		} else {
+		  } else {
           menuOn = false;
-        } 
+      }
     }
   }
 
+  /**
+   * Function that runs when user selected "Create Play"
+   * option from main menu.
+   */
   public void createPlay()
   {
     offensiveTeam.setPositions(0);
     defensiveTeam.setPositions(0);
     selectedFrame = 0;
-    
-	while(running)
+
+    while(running)
     {
       try {runner.sleep(13);}
       catch (Exception e) {}
@@ -807,8 +918,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
     }
   }
+
+  /**
+   * Function that runs when user selected "Run Play"
+   * option from main menu.
+   */
   public void runPlay()
-  {    
+  {
     animating = true;
     for(int i = 0; i < numberOfFrames - 1; i++)
     {
@@ -821,7 +937,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         try {runner.sleep(13);}
         catch (Exception e) {}
         updatePlayerPositions(i,j);
-        
+
         paintField(gBuffer);
         displayPlayerPositions();
 
@@ -830,6 +946,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
     animating = false;
   }
+
+  /**
+   * Function that runs when user selected "Whiteboard Mode"
+   * option from main menu.
+   */
   public void whiteBoard()
   {
     whiteBoardMode = true;
@@ -910,16 +1031,44 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
     }
   }
-  public void createBook(){}
+
+  /**
+   * Function that runs when user selected "Create Playbook"
+   * option from main menu.
+   */
+  public void createBook() {}
+
+  /**
+   * Function that runs when user selected "Load Playbook"
+   * option from main menu.
+   */
   public void loadBook(){}
+
+  /**
+   * Function that runs when user selected "Export Playbook"
+   * option from main menu.
+   */
   public void exportBook(){}
+
+  /**
+   * Function that runs when user selected "View Tutorial"
+   * option from main menu.
+   */
   public void viewTutorial(){}
 
+  /**
+   * Function that is automatically called
+   * continuously to repaint graphics
+   */
   public void update(Graphics g)
   {
     paint(g);
   }
 
+  /**
+   * Function that essentially paints/displays
+   * all graphics onto window.
+   */
   public void paint(Graphics g)
   {
     g.drawImage (Buffer,0,0, this);
