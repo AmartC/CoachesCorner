@@ -1030,6 +1030,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       repaint();
     }
+    markerMode = false;
   }
 
   /**
