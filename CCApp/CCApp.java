@@ -677,7 +677,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
 
       e.consume();
-    }else if(markerMode && freeDraw) frees.add(new Point(e.getXOnScreen(),e.getYOnScreen()));
+    }else if(markerMode && freeDraw) frees.add(new Point(e.getX(),e.getY()));
   }
 
   /**
@@ -768,7 +768,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     for(int i = 0; i < frees.size(); i++)
     {
       Point curr = frees.get(i);
-      gBuffer.fillOval(curr.getX()-1, curr.getY()-1, 2, 2);
+      gBuffer.fillOval(curr.getX()-1, curr.getY()-2, 4, 4);
     }
     // draw squares
     for(int i = 0; i < squares.size(); i++)
