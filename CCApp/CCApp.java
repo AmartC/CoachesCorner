@@ -21,28 +21,18 @@ import javax.imageio.ImageIO;
 public class CCApp extends Applet implements Runnable, MouseListener, MouseMotionListener
 {
   Thread runner;  // Main thread running the applet
-  Image Buffer; // Used to paint all graphics onto window
   Graphics gBuffer; // Used to manage what is displayed
+  Image Buffer; // Used to paint all graphics onto window
   CCAppGraphics graphics;
   int width, height;  // Width and height of applet window
   boolean rightKey, leftKey, upKey, downKey;  // Used for keyboard controls (currently not used)
-
-  double ONE_YARD;  // Stores how many pixels are in a yard on field
-  int CENTER_OF_FIELD;
-
+  
   int x, y; // Used for positioning of certain objects on field
   int mx, my;  // the most recently recorded mouse coordinates
-  int selectedFrame;  // Holds the number of current frame selected by user
-  int numberOfFrames; // Total number of frames in animation
-  int frameTime;  //
+  int selectedFrame;  // Holds the number of current frame selected by used
 
   JLabel frameLabel;  // Previously used for labeling a textfield (not used anymore)
   JTextField newFrame;  // Previously used for adding textfield to modify frames (not used anymore)
-
-  int frameButtonSize;  // These are used to position the frame menu buttons
-  int frameButtonIndentation;
-  int frameMenuPositionX;
-  int frameMenuPositionY;
 
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
@@ -50,7 +40,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
   ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
-  ArrayList<ArrayList<Integer>> frees = new ArrayList<ArrayList<Integer>>();
+  ArrayList<ArrayList<Integer> > frees = new ArrayList<ArrayList<Integer>>();
 
   Player selectedPlayer;  // The player that has been most recently clicked on
   Team offensiveTeam;
@@ -66,20 +56,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     width=this.getSize().width;
     height=this.getSize().height;
     Buffer=createImage(width,height);
-    gBuffer=Buffer.getGraphics();
-    graphics = new CCAppGraphics(gBuffer);
+    gBuffer=Buffer.getGraphics();  
     addKeyListener(new MyKeyListener());
 
-    ONE_YARD = height/20;
-    CENTER_OF_FIELD = width/2;
-
-    y = (int)(ONE_YARD*15);
+    y = (int)(height/20*15);
     x = width/2;
     selectedFrame = 0;
-    frameTime = 400;
-    numberOfFrames = 1;
-
-    running = false;
     animating = false;
 
     playerDiameter = 30;
@@ -100,6 +82,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
       defensiveTeam.addPlayer(c);
     }
+    
+    graphics = new CCAppGraphics(gBuffer,Buffer,width,height,offensiveTeam,defensiveTeam, this);  
 
     // Add mouse listeners to detect mouse interactions
     addMouseListener(this);
@@ -110,9 +94,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     newFrame = new JTextField(10);
     this.add(frameLabel);
     this.add(newFrame);
-    frameButtonSize = 25;
-    frameButtonIndentation = 10;
-    frameMenuPositionX = 20;
 
     // Construct the menu button
     Button menu = new Button("Menu");
@@ -127,7 +108,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     );
-    frameMenuPositionY = height - frameButtonSize - 20;
   }
 
 
@@ -367,49 +347,49 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     my = e.getY();
 
     // Calculate position of the remove frame button
-    int minusFrameButtonX = frameMenuPositionX;
-    int minusFrameButtonY = frameMenuPositionY - frameButtonSize - frameButtonIndentation;
+    int minusFrameButtonX = graphics.frameMenuPositionX;
+    int minusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize - graphics.frameButtonIndentation;
 
     // Check if the remove frame button has been clicked on
-    if (numberOfFrames > 1 && (minusFrameButtonX < mx && mx < minusFrameButtonX + frameButtonSize && minusFrameButtonY < my && my < minusFrameButtonY + frameButtonSize))
+    if (graphics.numberOfFrames > 1 && (minusFrameButtonX < mx && mx < minusFrameButtonX + graphics.frameButtonSize && minusFrameButtonY < my && my < minusFrameButtonY + graphics.frameButtonSize))
     {
       offensiveTeam.removeLastFrameFromPlayers();
       defensiveTeam.removeLastFrameFromPlayers();
 
       // Check if the current frame being viewed is getting removed
-      if(selectedFrame >= numberOfFrames - 1)
+      if(selectedFrame >= graphics.numberOfFrames - 1)
       {
-        selectedFrame = numberOfFrames - 2;
+        selectedFrame = graphics.numberOfFrames - 2;
       }
 
 	  offensiveTeam.setPositions(selectedFrame);
       defensiveTeam.setPositions(selectedFrame);
-      numberOfFrames--;
+      graphics.numberOfFrames--;
     }
 
     // Calculate position of the add frame button
-    int plusFrameButtonX = frameMenuPositionX + frameButtonSize + frameButtonIndentation;
-    int plusFrameButtonY = frameMenuPositionY - frameButtonSize - frameButtonIndentation;
+    int plusFrameButtonX = graphics.frameMenuPositionX + graphics.frameButtonSize + graphics.frameButtonIndentation;
+    int plusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize - graphics.frameButtonIndentation;
 
     // Check if the add frame button has been clicked on
-    if (plusFrameButtonX < mx && mx < plusFrameButtonX + frameButtonSize && plusFrameButtonY < my && my < plusFrameButtonY + frameButtonSize)
+    if (plusFrameButtonX < mx && mx < plusFrameButtonX + graphics.frameButtonSize && plusFrameButtonY < my && my < plusFrameButtonY + graphics.frameButtonSize)
     {
       offensiveTeam.addNewFrameToPlayers();
       defensiveTeam.addNewFrameToPlayers();
       selectedFrame++;
-      numberOfFrames++;
+      graphics.numberOfFrames++;
     }
 
     // Used for X position of each frame number botton
-    int indentationX = frameMenuPositionX;
-    for(int i = 0; i < numberOfFrames; i++)
+    int indentationX = graphics.frameMenuPositionX;
+    for(int i = 0; i < graphics.numberOfFrames; i++)
     {
       // Calculate position of the frame number button
       int numberFrameButtonX = indentationX;
-      int numberFrameButtonY = frameMenuPositionY;
+      int numberFrameButtonY = graphics.frameMenuPositionY;
 
       // Check if the frame number button has been clicked on
-      if (numberFrameButtonX < mx && mx < numberFrameButtonX + frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + frameButtonSize)
+      if (numberFrameButtonX < mx && mx < numberFrameButtonX + graphics.frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + graphics.frameButtonSize)
       {
         selectedFrame = i;
 	    offensiveTeam.setPositions(selectedFrame);
@@ -418,7 +398,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
 
       // Calculate X position of next frame number button
-      indentationX += frameButtonSize + frameButtonIndentation;
+      indentationX += graphics.frameButtonSize + graphics.frameButtonIndentation;
     }
   }
 
@@ -680,77 +660,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       e.consume();
     }
   }
-
-  /**
-   * Function used to paint or draw the football field in the background
-   */
-  public void paintField(Graphics gBuffer)
-  {
-    gBuffer.setColor(new Color(25,150,10));
-    gBuffer.fillRect(0,0,width,height);
-    gBuffer.setColor(Color.white);
-    for(int i = 0; i <= 20; i++)
-    {
-      if(i % 5 == 0)
-      {
-        gBuffer.drawLine(0,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
-      }
-      else
-      {
-        gBuffer.drawLine(0,i*(int)ONE_YARD,10,i*(int)ONE_YARD);
-        gBuffer.drawLine(width-10,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
-        gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
-        gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
-      }
-    }
-  }
-
-  /**
-   * Function that displays the players in both teams at their curret position.
-   */
-  public void displayPlayerPositions()
-  {
-    offensiveTeam.displayTeam(gBuffer);
-    defensiveTeam.displayTeam(gBuffer);
-  }
-
-  /**
-   * Function that displays the frame memu.
-   */
-  public void displayFrameMenu()
-  {
-    // Used for positioning of frame label
-    int centerOfButton = frameButtonSize / 2;
-
-    // Draw the remove ("-") frame button
-    gBuffer.setColor(Color.gray);
-    gBuffer.fillRect(frameMenuPositionX, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
-    gBuffer.setColor(Color.white);
-    gBuffer.drawString("-", frameMenuPositionX + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
-
-    // Draw the add ("+") frame button
-    gBuffer.setColor(Color.gray);
-    gBuffer.fillRect(frameMenuPositionX + frameButtonSize + frameButtonIndentation, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
-    gBuffer.setColor(Color.white);
-    gBuffer.drawString("+", frameMenuPositionX + frameButtonSize + frameButtonIndentation + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
-
-    // Used for X position of each frame number botton
-    int indentationX = frameMenuPositionX;
-    for(int i = 0; i < numberOfFrames; i++)
-    {
-      // Draw frame number button
-      gBuffer.setColor(Color.white);
-      gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize, frameButtonSize);
-
-      // Label the frame number button
-      gBuffer.setColor(Color.black);
-      gBuffer.drawString("" + i, indentationX + centerOfButton, frameMenuPositionY + centerOfButton);
-
-      // Calculate X position of next frame number button
-      indentationX += frameButtonSize + frameButtonIndentation;
-    }
-  }
-
+  
   /**
    * Function that displays the lines that have been drawn by the user.
    */
@@ -829,26 +739,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   }
 
   /**
-   * Function used for animation that updates the players'
-   * position based on its current velocity
-   */
-  public void updatePlayerPositions(int frame, int frameStep)
-  {
-    offensiveTeam.updateTeamAtFrame(frame, frameStep);
-    defensiveTeam.updateTeamAtFrame(frame, frameStep);
-  }
-
-  /**
-   * Function used for animation that updates the players'
-   * velocity based on the position of the frame they're in.
-   */
-  public void calculateVelocity(int frame)
-  {
-    offensiveTeam.calculateVelocity(frame, frameTime);
-    defensiveTeam.calculateVelocity(frame, frameTime);
-  }
-
-  /**
    * Main function that is continuously called when
    * applet is running.
    */
@@ -876,13 +766,15 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      options,
 	      options[6]);
 
-	    running = true;
+	    graphics.running = true;
 
 	    // Interpret the user's choice
-	    if(choice == 0){
-	      createPlay();
+	    if(choice == 0){	      
+	      graphics.createPlay(runner);
 	    }else if(choice == 1){
-	      runPlay();
+	      animating = true;
+	      graphics.runPlay(runner);
+	      animating = false;
 	    }else if(choice == 2){
 	      whiteBoard();
 	    }else if(choice == 3){
@@ -900,56 +792,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   }
 
   /**
-   * Function that runs when user selected "Create Play"
-   * option from main menu.
-   */
-  public void createPlay()
-  {
-    offensiveTeam.setPositions(0);
-    defensiveTeam.setPositions(0);
-    selectedFrame = 0;
-
-    while(running)
-    {
-      try {runner.sleep(13);}
-      catch (Exception e) {}
-      paintField(gBuffer);
-      displayFrameMenu();
-      displayPlayerPositions();
-
-      repaint();
-    }
-  }
-
-  /**
-   * Function that runs when user selected "Run Play"
-   * option from main menu.
-   */
-  public void runPlay()
-  {
-    animating = true;
-    for(int i = 0; i < numberOfFrames - 1; i++)
-    {
-      offensiveTeam.setPositions(i);
-      defensiveTeam.setPositions(i);
-      calculateVelocity(i);
-      newFrame.setText(Integer.toString(i));
-      for(int j = 0; j < frameTime; j++)
-      {
-        try {runner.sleep(13);}
-        catch (Exception e) {}
-        updatePlayerPositions(i,j);
-
-        paintField(gBuffer);
-        displayPlayerPositions();
-
-        repaint();
-	  }
-    }
-    animating = false;
-  }
-
-  /**
    * Function that runs when user selected "Whiteboard Mode"
    * option from main menu.
    */
@@ -959,8 +801,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     while(running){
       try {runner.sleep(13);}
       catch (Exception e) {}
-      paintField(gBuffer);
-      displayPlayerPositions();
+      graphics.paintField(gBuffer);
+      graphics.displayPlayerPositions();
       drawLines();
       // "Marker Mode" Toggle
       if(markerMode)gBuffer.setColor(Color.GREEN);
@@ -1058,22 +900,14 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * option from main menu.
    */
   public void viewTutorial(){}
-
+  
+  
   /**
    * Function that is automatically called
    * continuously to repaint graphics
    */
   public void update(Graphics g)
   {
-    paint(g);
-  }
-
-  /**
-   * Function that essentially paints/displays
-   * all graphics onto window.
-   */
-  public void paint(Graphics g)
-  {
-    g.drawImage (Buffer,0,0, this);
+    graphics.paint(g);
   }
 }
