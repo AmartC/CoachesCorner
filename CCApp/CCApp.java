@@ -34,7 +34,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int selectedFrame;  // Holds the number of current frame selected by user
   int numberOfFrames; // Total number of frames in animation
   int frameTime;  //
-
+    
   JLabel frameLabel;  // Previously used for labeling a textfield (not used anymore)
   JTextField newFrame;  // Previously used for adding textfield to modify frames (not used anymore)
 
@@ -380,7 +380,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         selectedFrame = numberOfFrames - 2;
       }
 
-	  offensiveTeam.setPositions(selectedFrame);
+      offensiveTeam.setPositions(selectedFrame);
       defensiveTeam.setPositions(selectedFrame);
       numberOfFrames--;
     }
@@ -410,7 +410,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       if (numberFrameButtonX < mx && mx < numberFrameButtonX + frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + frameButtonSize)
       {
         selectedFrame = i;
-	    offensiveTeam.setPositions(selectedFrame);
+        offensiveTeam.setPositions(selectedFrame);
         defensiveTeam.setPositions(selectedFrame);
         break;
       }
@@ -719,7 +719,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     // Used for positioning of frame label
     int centerOfButton = frameButtonSize / 2;
-
+    
     // Draw the remove ("-") frame button
     gBuffer.setColor(Color.gray);
     gBuffer.fillRect(frameMenuPositionX, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
@@ -737,7 +737,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     for(int i = 0; i < numberOfFrames; i++)
     {
       // Draw frame number button
-      gBuffer.setColor(Color.white);
+      if(i == selectedFrame) gBuffer.setColor(Color.yellow);
+      else gBuffer.setColor(Color.white);
       gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize, frameButtonSize);
 
       // Label the frame number button
@@ -856,42 +857,42 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     boolean menuOn = true;
     while(menuOn)
     {
-	    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
-	    String[] options = new String[] {"Create a Play",
-	      "Run a Play",
-	      "Whiteboard Mode",
-	      "Create Playbook",
-	      "Load Playbook",
-	      "Export Playbook",
-	      "View Tutorials"};
-	    // Get choice from user
-	    int choice = JOptionPane.showOptionDialog(null,
-	      "Welcome to Coach's Corner!",
-	      "CCApp",
-	      JOptionPane.DEFAULT_OPTION,
-	      JOptionPane.INFORMATION_MESSAGE,
-	      icon,
-	      options,
-	      options[6]);
+        ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
+        String[] options = new String[] {"Create a Play",
+          "Run a Play",
+          "Whiteboard Mode",
+          "Create Playbook",
+          "Load Playbook",
+          "Export Playbook",
+          "View Tutorials"};
+        // Get choice from user
+        int choice = JOptionPane.showOptionDialog(null,
+          "Welcome to Coach's Corner!",
+          "CCApp",
+          JOptionPane.DEFAULT_OPTION,
+          JOptionPane.INFORMATION_MESSAGE,
+          icon,
+          options,
+          options[6]);
 
-	    running = true;
+        running = true;
 
-	    // Interpret the user's choice
-	    if(choice == 0){
-	      createPlay();
-	    }else if(choice == 1){
-	      runPlay();
-	    }else if(choice == 2){
-	      whiteBoard();
-	    }else if(choice == 3){
-	      createBook();
-	    }else if(choice == 4){
-	      loadBook();
-	    }else if(choice == 5){
-	      exportBook();
-	    }else if(choice == 6){
-	      viewTutorial();
-		  } else {
+        // Interpret the user's choice
+        if(choice == 0){
+          createPlay();
+        }else if(choice == 1){
+          runPlay();
+        }else if(choice == 2){
+          whiteBoard();
+        }else if(choice == 3){
+          createBook();
+        }else if(choice == 4){
+          loadBook();
+        }else if(choice == 5){
+          exportBook();
+        }else if(choice == 6){
+          viewTutorial();
+          } else {
           menuOn = false;
       }
     }
@@ -942,9 +943,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         displayPlayerPositions();
 
         repaint();
-	  }
+      
+      animating = false;
     }
-    animating = false;
+    }
   }
 
   /**
