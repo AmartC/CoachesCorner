@@ -23,6 +23,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Thread runner;  // Main thread running the applet
   Image Buffer; // Used to paint all graphics onto window
   Graphics gBuffer; // Used to manage what is displayed
+  CCAppGraphics graphics;
   int width, height;  // Width and height of applet window
   boolean rightKey, leftKey, upKey, downKey;  // Used for keyboard controls (currently not used)
 
@@ -66,6 +67,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     height=this.getSize().height;
     Buffer=createImage(width,height);
     gBuffer=Buffer.getGraphics();
+    graphics = new CCAppGraphics(gBuffer);
     addKeyListener(new MyKeyListener());
 
     ONE_YARD = height/20;
