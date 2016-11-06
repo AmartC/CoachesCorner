@@ -31,9 +31,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int mx, my;  // the most recently recorded mouse coordinates
   int selectedFrame;  // Holds the number of current frame selected by used
 
-  JLabel frameLabel;  // Previously used for labeling a textfield (not used anymore)
-  JTextField newFrame;  // Previously used for adding textfield to modify frames (not used anymore)
-
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
   ArrayList<Point> paint_coords; // coordinates for drawing straight lines
@@ -57,11 +54,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     height=this.getSize().height;
     Buffer=createImage(width,height);
     gBuffer=Buffer.getGraphics();  
-    addKeyListener(new MyKeyListener());
 
     y = (int)(height/20*15);
     x = width/2;
     selectedFrame = 0;
+    running = false;
     animating = false;
 
     playerDiameter = 30;
@@ -83,17 +80,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       defensiveTeam.addPlayer(c);
     }
     
-    graphics = new CCAppGraphics(gBuffer,Buffer,width,height,offensiveTeam,defensiveTeam, this);  
+    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);  
 
     // Add mouse listeners to detect mouse interactions
     addMouseListener(this);
     addMouseMotionListener(this);
-
-
-    frameLabel = new JLabel("Frame");
-    newFrame = new JTextField(10);
-    this.add(frameLabel);
-    this.add(newFrame);
 
     // Construct the menu button
     Button menu = new Button("Menu");
@@ -108,78 +99,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     );
-  }
-
-
-  /**
-   * Class used for detection of keyboard interactions (currently not used)
-   */
-  private class MyKeyListener extends KeyAdapter
-  {
-    public void keyPressed(KeyEvent e)
-    {
-      switch (e.getKeyCode())
-      {
-        case KeyEvent.VK_A:
-        leftKey = true;
-        break;
-        case KeyEvent.VK_D:
-        rightKey = true;
-        break;
-        case KeyEvent.VK_W:
-        upKey = true;
-        break;
-        case KeyEvent.VK_S:
-        downKey = true;
-        break;
-        case KeyEvent.VK_LEFT:
-        leftKey = true;
-        break;
-        case KeyEvent.VK_RIGHT:
-        rightKey = true;
-        break;
-        case KeyEvent.VK_UP:
-        upKey = true;
-        break;
-        case KeyEvent.VK_DOWN:
-        downKey = true;
-        break;
-      }
-    }
-
-    /**
-     * Another class used for detection of keyboard interactions (currently not used)
-     */
-    public void keyReleased(KeyEvent e)
-    {
-      switch (e.getKeyCode())
-      {
-        case KeyEvent.VK_A:
-        leftKey = false;
-        break;
-        case KeyEvent.VK_D:
-        rightKey = false;
-        break;
-        case KeyEvent.VK_W:
-        upKey = false;
-        break;
-        case KeyEvent.VK_S:
-        downKey = false;
-        break;
-        case KeyEvent.VK_LEFT:
-        leftKey = false;
-        break;
-        case KeyEvent.VK_RIGHT:
-        rightKey = false;
-        break;
-        case KeyEvent.VK_UP:
-        upKey = false;
-        break;
-        case KeyEvent.VK_DOWN:
-        downKey = false;
-        break;
-      }
-    }
   }
 
   /**
@@ -206,110 +125,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
-  /**
-   * Function responsible for handling the event when a user
-   * right clicks on a player on field.
-   * Essentially allows users to modify attributes of the player
-   * object.
-   */
-  public void handleInput()
-  {
-    // Set up a JOptionPane (pop up dialog) with three
-    // textfield that will allow user to change player
-    // member variables
-    JPanel panel = new JPanel();
-
-    JLabel xLabel = new JLabel("X");
-    JTextField newX = new JTextField(10);
-    Point playerPoints = selectedPlayer.getPositionAtFrame(selectedFrame);
-    newX.setText(String.valueOf(playerPoints.getX()));
-    panel.add(xLabel);
-    panel.add(newX);
-
-    JLabel yLabel = new JLabel("Y");
-    JTextField newY = new JTextField(10);
-    newY.setText(String.valueOf(playerPoints.getY()));
-    panel.add(yLabel);
-    panel.add(newY);
-
-    JLabel speedLabel = new JLabel("Speed");
-    JTextField newSpeed = new JTextField(10);
-    newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
-    panel.add(speedLabel);
-    panel.add(newSpeed);
-
-    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
-    if (value == JOptionPane.OK_OPTION)
-    {
-      int updatedX = playerPoints.getX();
-      int updatedY = playerPoints.getY();
-      int updatedSpeed = selectedPlayer.getSpeed();
-
-      // OK was pressed
-      if(newX.getText().replaceAll("\\s","").length() != 0)
-      {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          updatedX = Integer.parseInt(newX.getText());
-          if(updatedX < 0)
-          {
-            updatedX = 0;
-          }
-          else if (updatedX > width)
-          {
-            updatedX = width - playerDiameter;
-          }
-          selectedPlayer.setX(updatedX);
-        }
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setX(playerPoints.getX());
-        }
-      }
-
-      if(newY.getText().replaceAll("\\s","").length() != 0)
-      {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          updatedY = Integer.parseInt(newY.getText());
-          if(updatedY < 0)
-          {
-            updatedY = 0;
-          }
-          else if (updatedY > height)
-          {
-            updatedY = height - playerDiameter;
-          }
-          selectedPlayer.setY(updatedY);
-        }
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setY(playerPoints.getY());
-        }
-      }
-
-      selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
-
-      if(newSpeed.getText().replaceAll("\\s","").length() != 0)
-      {
-        // Verify that input can be parsed to be an integer.
-        try
-        {
-          updatedSpeed = Integer.parseInt(newSpeed.getText());
-          if (updatedSpeed >= 1 && updatedSpeed <= 3)
-          {
-            selectedPlayer.setSpeed(updatedSpeed);
-          }
-        }
-        catch(NumberFormatException e)
-        {
-          selectedPlayer.setSpeed(selectedPlayer.getSpeed());
-        }
-      }
-    }
-  }
+  
 
   /**
    * Function that detects
@@ -500,7 +316,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         // Keep track of player that was recently clicked on
         selectedPlayer = newSelectedPlayer;
         // Delegate work
-        this.handleInput();
+        graphics.handleInput(selectedPlayer,selectedFrame,playerDiameter);
       }
       else  // A player on offensive team that was NOT clicked on
       {
@@ -511,7 +327,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           // Keep track of player that was recently clicked on
           selectedPlayer = newSelectedPlayer;
           // Delegate work
-          this.handleInput();
+          graphics.handleInput(selectedPlayer,selectedFrame,playerDiameter);
         }
       }
     }
@@ -659,84 +475,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       e.consume();
     }
-  }
-  
-  /**
-   * Function that displays the lines that have been drawn by the user.
-   */
-  public void drawLines(){
-    gBuffer.setColor(Color.YELLOW);
-    // draw straight lines
-    for(int i = 0; i < lines.size(); i++)
-    {
-      Line curr = lines.get(i);
-      Point sp = curr.getStart();
-      Point ep = curr.getEnd();
-      gBuffer.drawLine(sp.getX(), sp.getY(), ep.getX(), ep.getY());
-    }
-    // draw free lines
-    for(int i = 0; i < frees.size(); i++)
-    {
-      ArrayList<Integer> curr = frees.get(i);
-      gBuffer.fillOval(curr.get(0), curr.get(1), 4, 4);
-    }
-    // draw squares
-    for(int i = 0; i < squares.size(); i++)
-    {
-      Line curr = squares.get(i);
-      int x1 = curr.getStart().getX();
-      int y1 = curr.getStart().getY();
-      int x2 = curr.getEnd().getX();
-      int y2 = curr.getEnd().getY();
-      int height = y2 - y1;
-      int width = x2 - x1;
-      if(height < 0 && width < 0)
-      {
-        height *= -1;
-        width *= -1;
-        gBuffer.drawRect(x2,y2,width,height);
-      }
-      else if(height < 0)
-      {
-        height *= -1;
-        gBuffer.drawRect(x1,y2,width,height);
-      }
-      else if(width < 0)
-      {
-        width *= -1;
-        gBuffer.drawRect(x2,y1,width,height);
-      }
-      else gBuffer.drawRect(x1,y1,width,height);
-    }
-    // draw circles
-    for(int i = 0; i < circles.size(); i++)
-    {
-      Line curr = circles.get(i);
-      int x1 = curr.getStart().getX();
-      int y1 = curr.getStart().getY();
-      int x2 = curr.getEnd().getX();
-      int y2 = curr.getEnd().getY();
-      int height = y2 - y1;
-      int width = x2 - x1;
-      if(height < 0 && width < 0)
-      {
-        height *= -1;
-        width *= -1;
-        gBuffer.drawOval(x2,y2,width,height);
-      }
-      else if(height < 0)
-      {
-        height *= -1;
-        gBuffer.drawOval(x1,y2,width,height);
-      }
-      else if(width < 0)
-      {
-        width *= -1;
-        gBuffer.drawOval(x2,y1,width,height);
-      }
-      else gBuffer.drawOval(x1,y1,width,height);
-    }
-  }
+  }  
 
   /**
    * Main function that is continuously called when
@@ -766,14 +505,14 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      options,
 	      options[6]);
 
-	    graphics.running = true;
+	    running = true;
 
 	    // Interpret the user's choice
 	    if(choice == 0){	      
-	      graphics.createPlay(runner);
+	      createPlay();
 	    }else if(choice == 1){
 	      animating = true;
-	      graphics.runPlay(runner);
+	      runPlay();
 	      animating = false;
 	    }else if(choice == 2){
 	      whiteBoard();
@@ -790,6 +529,52 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
   }
+  
+  /**
+   * Function that runs when user selected "Create Play"
+   * option from main menu.
+   */
+  public void createPlay()
+  {
+    offensiveTeam.setPositions(0);
+    defensiveTeam.setPositions(0);
+    running = true;
+    while(running)
+    {
+      try {runner.sleep(13);}
+      catch (Exception e) {}
+      graphics.paintField(gBuffer);
+      graphics.displayFrameMenu(gBuffer);
+      graphics.displayPlayerPositions(gBuffer);
+
+      repaint();
+    }
+  }  
+    
+   /**
+   * Function that runs when user selected "Run Play"
+   * option from main menu.
+   */
+  public void runPlay()
+  {
+    for(int i = 0; i < graphics.numberOfFrames - 1; i++)
+    {
+      offensiveTeam.setPositions(i);
+      defensiveTeam.setPositions(i);
+      graphics.calculateVelocity(i);
+      for(int j = 0; j < graphics.frameTime; j++)
+      {
+        try {runner.sleep(13);}
+        catch (Exception e) {}
+        graphics.updatePlayerPositions(i,j);
+
+        graphics.paintField(gBuffer);
+        graphics.displayPlayerPositions(gBuffer);
+
+        repaint();
+      }
+    }
+  }
 
   /**
    * Function that runs when user selected "Whiteboard Mode"
@@ -802,75 +587,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       try {runner.sleep(13);}
       catch (Exception e) {}
       graphics.paintField(gBuffer);
-      graphics.displayPlayerPositions();
-      drawLines();
-      // "Marker Mode" Toggle
-      if(markerMode)gBuffer.setColor(Color.GREEN);
-      else gBuffer.setColor(Color.WHITE);
-      gBuffer.fillRect(5,5,50,50);
-      gBuffer.setColor(Color.BLACK);
-      for(int i = 0; i < 3; i++)
-      {
-        gBuffer.drawRect(5+i,5+i,50-(2*i),50-(2*i));
-      }
-      gBuffer.drawString("Marker",12,27);
-      gBuffer.drawString("Mode",15,42);
-      // "Clear All" Toggle
-      gBuffer.setColor(Color.WHITE);
-      gBuffer.fillRect(58,5,50,50);
-      gBuffer.setColor(Color.BLACK);
-      for(int i = 0; i < 3; i++)
-      {
-        gBuffer.drawRect(58+i,5+i,50-(2*i),50-(2*i));
-      }
-      gBuffer.drawString("Clear",67,27);
-      gBuffer.drawString("All",77,42);
-      // If Marker Mode toggled 'on', display more options
-      if(markerMode)
-      {
-        // "Draw Line" Toggle
-        if(lineDraw) gBuffer.setColor(Color.GREEN);
-        else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(5,58,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(5+i,58+i,50-(2*i),50-(2*i));
-        }
-        gBuffer.drawString("Draw", 15, 80);
-        gBuffer.drawString("Line", 17, 95);
-        // "Draw Free" Toggle
-        if(freeDraw) gBuffer.setColor(Color.GREEN);
-        else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(5, 111, 50, 50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(5+i,111+i,50-(2*i),50-(2*i));
-        }
-        gBuffer.drawString("Draw", 15, 133);
-        gBuffer.drawString("Free", 17, 148);
-        // "Draw Square" Toggle
-        if(sqDraw) gBuffer.setColor(Color.GREEN);
-        else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(58,58,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(58+i,58+i,50-(2*i),50-(2*i));
-        }
-        gBuffer.drawRect(68,68,30,30);
-        // "Draw Circle" Toggle
-        if(circDraw) gBuffer.setColor(Color.GREEN);
-        else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(58,111,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(58+i,111+i,50-(2*i),50-(2*i));
-        }
-        gBuffer.drawOval(68,121,30,30);
-      }
+      graphics.displayPlayerPositions(gBuffer);
+      graphics.drawLines(gBuffer, lines, squares, circles, frees);
+      graphics.whiteBoardMenu(gBuffer,markerMode,lineDraw,freeDraw,sqDraw,circDraw);
 
       repaint();
     }
@@ -908,6 +627,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    */
   public void update(Graphics g)
   {
-    graphics.paint(g);
+    paint(g);
+  }
+  
+  public void paint(Graphics g)
+  {
+    g.drawImage (Buffer,0,0, this);
   }
 }

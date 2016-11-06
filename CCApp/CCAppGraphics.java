@@ -14,8 +14,6 @@ import javax.swing.*;
 public class CCAppGraphics// extends Applet
 {  
   // instance variables - replace the example below with your own
-  Image Buffer; // Used to paint all graphics onto window
-  Graphics gBuffer;
   int width, height; 
   int frameButtonSize;  // These are used to position the frame menu buttons
   int frameButtonIndentation;
@@ -28,23 +26,16 @@ public class CCAppGraphics// extends Applet
   
   Team offensiveTeam;
   Team defensiveTeam;
-  
-  CCApp app;
-  
-  boolean running;
     
   /**
    * Constructor for objects of class CCAppGraphics
    */
-  public CCAppGraphics(Graphics g, Image buff, int w, int h, Team A, Team B, CCApp C)
+  public CCAppGraphics(int w, int h, Team A, Team B)
   {
-    gBuffer = g;
-    Buffer = buff;
     width = w;
     height = h;
     offensiveTeam = A;
     defensiveTeam = B;
-    app = C;
       
     frameButtonSize = 25;
     frameButtonIndentation = 10;
@@ -52,7 +43,6 @@ public class CCAppGraphics// extends Applet
     frameMenuPositionY = height - frameButtonSize - 20;
     ONE_YARD = height/20;
     CENTER_OF_FIELD = width/2;
-    running = false;
     numberOfFrames = 1;
     frameTime = 400;
   }
@@ -84,7 +74,7 @@ public class CCAppGraphics// extends Applet
   /**
    * Function that displays the players in both teams at their curret position.
    */
-  public void displayPlayerPositions()
+  public void displayPlayerPositions(Graphics gBuffer)
   {
     offensiveTeam.displayTeam(gBuffer);
     defensiveTeam.displayTeam(gBuffer);
@@ -93,7 +83,7 @@ public class CCAppGraphics// extends Applet
   /**
    * Function that displays the frame memu.
    */
-  public void displayFrameMenu()
+  public void displayFrameMenu(Graphics gBuffer)
   {
     // Used for positioning of frame label
     int centerOfButton = frameButtonSize / 2;
@@ -125,9 +115,7 @@ public class CCAppGraphics// extends Applet
       // Calculate X position of next frame number button
       indentationX += frameButtonSize + frameButtonIndentation;
     }
-  }
-
-  
+  } 
 
   /**
    * Function used for animation that updates the players'
@@ -150,66 +138,255 @@ public class CCAppGraphics// extends Applet
   }
   
   /**
-   * Function that runs when user selected "Create Play"
-   * option from main menu.
+   * Function responsible for handling the event when a user
+   * right clicks on a player on field.
+   * Essentially allows users to modify attributes of the player
+   * object.
    */
-  public void createPlay(Thread runner)
+  public void handleInput(Player selectedPlayer, int selectedFrame, int playerDiameter)
   {
-    offensiveTeam.setPositions(0);
-    defensiveTeam.setPositions(0);
-    running = true;
-    while(running)
-    {
-      try {runner.sleep(13);}
-      catch (Exception e) {}
-      paintField(gBuffer);
-      displayFrameMenu();
-      displayPlayerPositions();
+    // Set up a JOptionPane (pop up dialog) with three
+    // textfield that will allow user to change player
+    // member variables
+    JPanel panel = new JPanel();
 
-      update(gBuffer);
-    }
-  }
-    
-   /**
-   * Function that runs when user selected "Run Play"
-   * option from main menu.
-   */
-  public void runPlay(Thread runner)
-  {
-    for(int i = 0; i < numberOfFrames - 1; i++)
+    JLabel xLabel = new JLabel("X");
+    JTextField newX = new JTextField(10);
+    Point playerPoints = selectedPlayer.getPositionAtFrame(selectedFrame);
+    newX.setText(String.valueOf(playerPoints.getX()));
+    panel.add(xLabel);
+    panel.add(newX);
+
+    JLabel yLabel = new JLabel("Y");
+    JTextField newY = new JTextField(10);
+    newY.setText(String.valueOf(playerPoints.getY()));
+    panel.add(yLabel);
+    panel.add(newY);
+
+    JLabel speedLabel = new JLabel("Speed");
+    JTextField newSpeed = new JTextField(10);
+    newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
+    panel.add(speedLabel);
+    panel.add(newSpeed);
+
+    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
+    if (value == JOptionPane.OK_OPTION)
     {
-      offensiveTeam.setPositions(i);
-      defensiveTeam.setPositions(i);
-      calculateVelocity(i);
-      for(int j = 0; j < frameTime; j++)
+      int updatedX = playerPoints.getX();
+      int updatedY = playerPoints.getY();
+      int updatedSpeed = selectedPlayer.getSpeed();
+
+      // OK was pressed
+      if(newX.getText().replaceAll("\\s","").length() != 0)
       {
-        try {runner.sleep(13);}
-        catch (Exception e) {}
-        updatePlayerPositions(i,j);
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedX = Integer.parseInt(newX.getText());
+          if(updatedX < 0)
+          {
+            updatedX = 0;
+          }
+          else if (updatedX > width)
+          {
+            updatedX = width - playerDiameter;
+          }
+          selectedPlayer.setX(updatedX);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setX(playerPoints.getX());
+        }
+      }
 
-        paintField(gBuffer);
-        displayPlayerPositions();
+      if(newY.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedY = Integer.parseInt(newY.getText());
+          if(updatedY < 0)
+          {
+            updatedY = 0;
+          }
+          else if (updatedY > height)
+          {
+            updatedY = height - playerDiameter;
+          }
+          selectedPlayer.setY(updatedY);
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setY(playerPoints.getY());
+        }
+      }
 
-        update(gBuffer);
+      selectedPlayer.setPositionAtFrame(selectedFrame, updatedX, updatedY);
+
+      if(newSpeed.getText().replaceAll("\\s","").length() != 0)
+      {
+        // Verify that input can be parsed to be an integer.
+        try
+        {
+          updatedSpeed = Integer.parseInt(newSpeed.getText());
+          if (updatedSpeed >= 1 && updatedSpeed <= 3)
+          {
+            selectedPlayer.setSpeed(updatedSpeed);
+          }
+        }
+        catch(NumberFormatException e)
+        {
+          selectedPlayer.setSpeed(selectedPlayer.getSpeed());
+        }
       }
     }
   }
   
   /**
-   * Function that is automatically called
-   * continuously to repaint graphics
+   * Function that displays the lines that have been drawn by the user.
    */
-  public void update(Graphics g)
-  {
-    paint(g);
+  public void drawLines(Graphics gBuffer, ArrayList<Line> lines, ArrayList<Line> squares, ArrayList<Line> circles, ArrayList<ArrayList<Integer> > frees){
+    gBuffer.setColor(Color.YELLOW);
+    // draw straight lines
+    for(int i = 0; i < lines.size(); i++)
+    {
+      Line curr = lines.get(i);
+      Point sp = curr.getStart();
+      Point ep = curr.getEnd();
+      gBuffer.drawLine(sp.getX(), sp.getY(), ep.getX(), ep.getY());
+    }
+    // draw free lines
+    for(int i = 0; i < frees.size(); i++)
+    {
+      ArrayList<Integer> curr = frees.get(i);
+      gBuffer.fillOval(curr.get(0), curr.get(1), 4, 4);
+    }
+    // draw squares
+    for(int i = 0; i < squares.size(); i++)
+    {
+      Line curr = squares.get(i);
+      int x1 = curr.getStart().getX();
+      int y1 = curr.getStart().getY();
+      int x2 = curr.getEnd().getX();
+      int y2 = curr.getEnd().getY();
+      int height = y2 - y1;
+      int width = x2 - x1;
+      if(height < 0 && width < 0)
+      {
+        height *= -1;
+        width *= -1;
+        gBuffer.drawRect(x2,y2,width,height);
+      }
+      else if(height < 0)
+      {
+        height *= -1;
+        gBuffer.drawRect(x1,y2,width,height);
+      }
+      else if(width < 0)
+      {
+        width *= -1;
+        gBuffer.drawRect(x2,y1,width,height);
+      }
+      else gBuffer.drawRect(x1,y1,width,height);
+    }
+    // draw circles
+    for(int i = 0; i < circles.size(); i++)
+    {
+      Line curr = circles.get(i);
+      int x1 = curr.getStart().getX();
+      int y1 = curr.getStart().getY();
+      int x2 = curr.getEnd().getX();
+      int y2 = curr.getEnd().getY();
+      int height = y2 - y1;
+      int width = x2 - x1;
+      if(height < 0 && width < 0)
+      {
+        height *= -1;
+        width *= -1;
+        gBuffer.drawOval(x2,y2,width,height);
+      }
+      else if(height < 0)
+      {
+        height *= -1;
+        gBuffer.drawOval(x1,y2,width,height);
+      }
+      else if(width < 0)
+      {
+        width *= -1;
+        gBuffer.drawOval(x2,y1,width,height);
+      }
+      else gBuffer.drawOval(x1,y1,width,height);
+    }
   }
-
-  /**
-   * Function that essentially paints/displays
-   * all graphics onto window.
-   */
-  public void paint(Graphics g)
+  
+  public void whiteBoardMenu(Graphics gBuffer, boolean markerMode, boolean lineDraw, boolean freeDraw, boolean sqDraw, boolean circDraw)
   {
-    g.drawImage (Buffer,0,0, app);
-  }
+      // "Marker Mode" Toggle
+      if(markerMode)gBuffer.setColor(Color.GREEN);
+      else gBuffer.setColor(Color.WHITE);
+      gBuffer.fillRect(5,5,50,50);
+      gBuffer.setColor(Color.BLACK);
+      for(int i = 0; i < 3; i++)
+      {
+        gBuffer.drawRect(5+i,5+i,50-(2*i),50-(2*i));
+      }
+      gBuffer.drawString("Marker",12,27);
+      gBuffer.drawString("Mode",15,42);
+      // "Clear All" Toggle
+      gBuffer.setColor(Color.WHITE);
+      gBuffer.fillRect(58,5,50,50);
+      gBuffer.setColor(Color.BLACK);
+      for(int i = 0; i < 3; i++)
+      {
+        gBuffer.drawRect(58+i,5+i,50-(2*i),50-(2*i));
+      }
+      gBuffer.drawString("Clear",67,27);
+      gBuffer.drawString("All",77,42);
+      // If Marker Mode toggled 'on', display more options
+      if(markerMode)
+      {
+        // "Draw Line" Toggle
+        if(lineDraw) gBuffer.setColor(Color.GREEN);
+        else gBuffer.setColor(Color.WHITE);
+        gBuffer.fillRect(5,58,50,50);
+        gBuffer.setColor(Color.BLACK);
+        for(int i = 0; i < 3; i++)
+        {
+          gBuffer.drawRect(5+i,58+i,50-(2*i),50-(2*i));
+        }
+        gBuffer.drawString("Draw", 15, 80);
+        gBuffer.drawString("Line", 17, 95);
+        // "Draw Free" Toggle
+        if(freeDraw) gBuffer.setColor(Color.GREEN);
+        else gBuffer.setColor(Color.WHITE);
+        gBuffer.fillRect(5, 111, 50, 50);
+        gBuffer.setColor(Color.BLACK);
+        for(int i = 0; i < 3; i++)
+        {
+          gBuffer.drawRect(5+i,111+i,50-(2*i),50-(2*i));
+        }
+        gBuffer.drawString("Draw", 15, 133);
+        gBuffer.drawString("Free", 17, 148);
+        // "Draw Square" Toggle
+        if(sqDraw) gBuffer.setColor(Color.GREEN);
+        else gBuffer.setColor(Color.WHITE);
+        gBuffer.fillRect(58,58,50,50);
+        gBuffer.setColor(Color.BLACK);
+        for(int i = 0; i < 3; i++)
+        {
+          gBuffer.drawRect(58+i,58+i,50-(2*i),50-(2*i));
+        }
+        gBuffer.drawRect(68,68,30,30);
+        // "Draw Circle" Toggle
+        if(circDraw) gBuffer.setColor(Color.GREEN);
+        else gBuffer.setColor(Color.WHITE);
+        gBuffer.fillRect(58,111,50,50);
+        gBuffer.setColor(Color.BLACK);
+        for(int i = 0; i < 3; i++)
+        {
+          gBuffer.drawRect(58+i,111+i,50-(2*i),50-(2*i));
+        }
+        gBuffer.drawOval(68,121,30,30);
+      }
+    }
 }
