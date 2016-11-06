@@ -45,11 +45,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
   int playerDiameter;   // Player's circle/dot diameter
   boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
+  Point free_pt; // for free draw
   ArrayList<Point> paint_coords; // coordinates for drawing straight lines
   ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
   ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
-  ArrayList<ArrayList<Integer>> frees = new ArrayList<ArrayList<Integer>>();
+  ArrayList<Point> frees = new ArrayList<Point>();
 
   Player selectedPlayer;  // The player that has been most recently clicked on
   Team offensiveTeam;
@@ -507,7 +508,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     }
-
+    
     // If marker mode is off and user right clicks
     if(SwingUtilities.isRightMouseButton(e) && !markerMode)
     {
@@ -676,7 +677,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       repaint();
 
       e.consume();
-    }
+    }else if(markerMode && freeDraw) frees.add(new Point(e.getXOnScreen(),e.getYOnScreen()));
   }
 
   /**
@@ -766,8 +767,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     // draw free lines
     for(int i = 0; i < frees.size(); i++)
     {
-      ArrayList<Integer> curr = frees.get(i);
-      gBuffer.fillOval(curr.get(0), curr.get(1), 4, 4);
+      Point curr = frees.get(i);
+      gBuffer.fillOval(curr.getX()-1, curr.getY()-1, 2, 2);
     }
     // draw squares
     for(int i = 0; i < squares.size(); i++)
@@ -836,7 +837,20 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     offensiveTeam.updateTeamAtFrame(frame, frameStep);
     defensiveTeam.updateTeamAtFrame(frame, frameStep);
   }
-
+  
+  /**
+   * Function to draw white boxes to keep our code as "DRY" as possible
+   */
+  public void drawBox(int x, int y)
+  {
+    gBuffer.fillRect(x,y,50,50);
+    gBuffer.setColor(Color.BLACK);
+    for(int i = 0; i < 3; i++)
+    {
+      gBuffer.drawRect(x+i,y+i,50-(2*i),50-(2*i));
+    }
+  }
+  
   /**
    * Function used for animation that updates the players'
    * velocity based on the position of the frame they're in.
@@ -965,22 +979,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       // "Marker Mode" Toggle
       if(markerMode)gBuffer.setColor(Color.GREEN);
       else gBuffer.setColor(Color.WHITE);
-      gBuffer.fillRect(5,5,50,50);
-      gBuffer.setColor(Color.BLACK);
-      for(int i = 0; i < 3; i++)
-      {
-        gBuffer.drawRect(5+i,5+i,50-(2*i),50-(2*i));
-      }
+      drawBox(5,5);
       gBuffer.drawString("Marker",12,27);
       gBuffer.drawString("Mode",15,42);
       // "Clear All" Toggle
       gBuffer.setColor(Color.WHITE);
-      gBuffer.fillRect(58,5,50,50);
-      gBuffer.setColor(Color.BLACK);
-      for(int i = 0; i < 3; i++)
-      {
-        gBuffer.drawRect(58+i,5+i,50-(2*i),50-(2*i));
-      }
+      drawBox(58,5);
       gBuffer.drawString("Clear",67,27);
       gBuffer.drawString("All",77,42);
       // If Marker Mode toggled 'on', display more options
@@ -989,44 +993,24 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         // "Draw Line" Toggle
         if(lineDraw) gBuffer.setColor(Color.GREEN);
         else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(5,58,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(5+i,58+i,50-(2*i),50-(2*i));
-        }
+        drawBox(5,58);
         gBuffer.drawString("Draw", 15, 80);
         gBuffer.drawString("Line", 17, 95);
         // "Draw Free" Toggle
         if(freeDraw) gBuffer.setColor(Color.GREEN);
         else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(5, 111, 50, 50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(5+i,111+i,50-(2*i),50-(2*i));
-        }
+        drawBox(5,111);
         gBuffer.drawString("Draw", 15, 133);
         gBuffer.drawString("Free", 17, 148);
         // "Draw Square" Toggle
         if(sqDraw) gBuffer.setColor(Color.GREEN);
         else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(58,58,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(58+i,58+i,50-(2*i),50-(2*i));
-        }
+        drawBox(58,58);
         gBuffer.drawRect(68,68,30,30);
         // "Draw Circle" Toggle
         if(circDraw) gBuffer.setColor(Color.GREEN);
         else gBuffer.setColor(Color.WHITE);
-        gBuffer.fillRect(58,111,50,50);
-        gBuffer.setColor(Color.BLACK);
-        for(int i = 0; i < 3; i++)
-        {
-          gBuffer.drawRect(58+i,111+i,50-(2*i),50-(2*i));
-        }
+        drawBox(58,111);
         gBuffer.drawOval(68,121,30,30);
       }
 
