@@ -7,13 +7,14 @@
  */
 import java.awt.*;
 import java.util.*;
+import java.io.Serializable;
 
 
 /**
  * The Team class holds the structure of the football team and holds all of
  * its players in an organized manner.
  */
-public class Team
+public class Team implements Serializable
 {
   Color color;
   String name;

@@ -7,11 +7,12 @@
  */
 import java.awt.*;
 import java.util.*;
+import java.io.Serializable;
 
 /**
  * The Player class holds the key information for a player on the field.
  */
-public class Player
+public class Player implements Serializable
 {
   String name;
   ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames.

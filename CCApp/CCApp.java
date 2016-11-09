@@ -12,6 +12,7 @@ import java.util.*;
 import java.applet.*;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import java.io.File;
 
 
 /**
@@ -122,6 +123,25 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         public void actionPerformed(ActionEvent event)
         {
             running = false;
+        }
+      }
+    );
+
+    Button saved = new Button("Saved");
+    this.add(saved);
+    saved.setLocation(5, 0);
+    saved.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event)
+        {
+          JFileChooser fileChooser = new JFileChooser();
+          fileChooser.setCurrentDirectory(new File("."));
+          int result = fileChooser.showOpenDialog(null);
+          if (result == JFileChooser.APPROVE_OPTION)
+          {
+            File selectedFile = fileChooser.getSelectedFile();
+          }
         }
       }
     );
@@ -914,7 +934,6 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       paintField(gBuffer);
       displayFrameMenu();
       displayPlayerPositions();
-
       repaint();
     }
   }
