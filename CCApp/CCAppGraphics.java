@@ -10,11 +10,13 @@ import java.awt.*;
 import java.util.*;
 import java.applet.*;
 import javax.swing.*;
+import javax.swing.filechooser.*;
+import java.io.File;
 
 public class CCAppGraphics// extends Applet
-{  
+{
   // instance variables - replace the example below with your own
-  int width, height; 
+  int width, height;
   int frameButtonSize;  // These are used to position the frame menu buttons
   int frameButtonIndentation;
   int frameMenuPositionX;
@@ -23,10 +25,10 @@ public class CCAppGraphics// extends Applet
   int CENTER_OF_FIELD;
   int numberOfFrames; // Total number of frames in animation
   int frameTime;  //number of iterations to animate a frame
-  
+
   Team offensiveTeam;
   Team defensiveTeam;
-    
+
   /**
    * Constructor for objects of class CCAppGraphics
    */
@@ -36,7 +38,7 @@ public class CCAppGraphics// extends Applet
     height = h;
     offensiveTeam = A;
     defensiveTeam = B;
-      
+
     frameButtonSize = 25;
     frameButtonIndentation = 10;
     frameMenuPositionX = 20;
@@ -115,7 +117,7 @@ public class CCAppGraphics// extends Applet
       // Calculate X position of next frame number button
       indentationX += frameButtonSize + frameButtonIndentation;
     }
-  } 
+  }
 
   /**
    * Function used for animation that updates the players'
@@ -136,7 +138,45 @@ public class CCAppGraphics// extends Applet
     offensiveTeam.calculateVelocity(frame, frameTime);
     defensiveTeam.calculateVelocity(frame, frameTime);
   }
-  
+
+  public void createAndShowSaveGUI()
+  {
+    JPanel savePanel = new JPanel();
+    JFileChooser fileChooser = new JFileChooser();
+
+    int returnVal = fileChooser.showSaveDialog(savePanel);
+    if (returnVal == JFileChooser.APPROVE_OPTION)
+    {
+        File file = fileChooser.getSelectedFile();
+        //This is where a real application would save the file.
+        JOptionPane.showConfirmDialog(null, savePanel, "Hello Everybody", JOptionPane.OK_CANCEL_OPTION);
+    }
+    else
+    {
+        JOptionPane.showConfirmDialog(null, savePanel, "Bye Everybody", JOptionPane.OK_CANCEL_OPTION);
+    }
+
+    /*JFrame frame = new JFrame();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    frame.add(new FileChooser());
+    frame.pack();
+    frame.setVisible(true);
+    int returnVal = fileChooser.showSaveDialog(FileChooser.this);
+    if (returnVal == JFileChooser.APPROVE_OPTION)
+    {
+        File file = fc.getSelectedFile();
+        //This is where a real application would save the file.
+        log.append("Saving: " + file.getName() + "." + newline);
+    }
+    else
+    {
+        log.append("Save command cancelled by user." + newline);
+    }
+    log.setCaretPosition(log.getDocument().getLength());*/
+    //JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
+  }
+
   /**
    * Function responsible for handling the event when a user
    * right clicks on a player on field.
@@ -241,7 +281,7 @@ public class CCAppGraphics// extends Applet
       }
     }
   }
-  
+
   /**
    * Function that displays the lines that have been drawn by the user.
    */
@@ -318,7 +358,7 @@ public class CCAppGraphics// extends Applet
       else gBuffer.drawOval(x1,y1,width,height);
     }
   }
-  
+
   public void whiteBoardMenu(Graphics gBuffer, boolean markerMode, boolean lineDraw, boolean freeDraw, boolean sqDraw, boolean circDraw)
   {
       // "Marker Mode" Toggle

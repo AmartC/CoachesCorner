@@ -8,6 +8,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.filechooser.*;
 import java.util.*;
 import java.applet.*;
 import java.net.URL;
@@ -100,7 +101,41 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     );
-    frameMenuPositionY = height - frameButtonSize - 20;
+
+    Button save = new Button("Save");
+    this.add(save);
+    save.setLocation(5,0);
+    save.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event)
+        {
+          SwingUtilities.invokeLater(new Runnable()
+          {
+              public void run()
+              {
+                  //Turn off metal's use of bold fonts
+                  JPanel testing = new JPanel();
+                  UIManager.put("swing.boldMetal", Boolean.FALSE);
+                  JFileChooser fileChooser = new JFileChooser();
+
+                  int returnVal = fileChooser.showSaveDialog(testing);
+                  if (returnVal == JFileChooser.APPROVE_OPTION)
+                  {
+                      File file = fileChooser.getSelectedFile();
+                      //This is where a real application would save the file.
+                      JOptionPane.showConfirmDialog(null, testing, "Hello Everybody", JOptionPane.OK_CANCEL_OPTION);
+                  }
+                  else
+                  {
+                      JOptionPane.showConfirmDialog(null, testing, "Bye Everybody", JOptionPane.OK_CANCEL_OPTION);
+                  }
+                  //graphics.createAndShowSaveGUI(CCApp.this);
+              }
+          });
+        }
+      }
+    );
   }
 
 
