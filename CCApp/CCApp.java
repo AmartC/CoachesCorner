@@ -42,7 +42,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   Player selectedPlayer;  // The player that has been most recently clicked on
   Team offensiveTeam;
   Team defensiveTeam;
-
+    
+  int dClkRes = 300;    // double-click speed in ms
+  long timeMouseDown=0; // last mouse down time
+  int lastX=0,lastY=0;  //  last x and y
 
   /**
    * Function called when applet starts up.
@@ -130,8 +133,42 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   /**
    * Function that detects
    */
-  public boolean mouseDown(Event evt,int x,int y)
+  public boolean mouseDown(Event event,int x,int y)
   {
+    long currentTime = event.when;
+    /*Check is user has double-clicked*/
+    if ((lastX==x) && (lastY==y) && ((event.when-timeMouseDown) < dClkRes)) 
+    {
+        // Find the player on offensive team that was right clicked on
+      Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(x, y);
+      if(newSelectedPlayer != null) // A player on offensive team was right clicked on
+      {
+        // Keep track of player that was recently clicked on
+        selectedPlayer = newSelectedPlayer;
+      }
+      else  // A player on offensive team that was NOT clicked on
+      {
+        // Find the player on defensive team team that was right clicked on
+        newSelectedPlayer = defensiveTeam.findPlayerAtPoint(x, y);
+        if(newSelectedPlayer != null) // A player on Defensive team was right clicked on
+        {
+          // Keep track of player that was recently clicked on
+          selectedPlayer = newSelectedPlayer;
+        }
+      }
+        
+      offensiveTeam.setBall();
+      defensiveTeam.setBall();
+      selectedPlayer.setBall(true);
+        
+      offensiveTeam.setBallAtFrame(selectedFrame);
+      defensiveTeam.setBallAtFrame(selectedFrame);
+      selectedPlayer.setBallAtFrame(selectedFrame, true);
+    } else {
+        timeMouseDown = event.when;
+        lastX=x;
+        lastY=y;
+    }
     return true;
   }
 
@@ -178,7 +215,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         selectedFrame = graphics.numberOfFrames - 2;
       }
 
-	  offensiveTeam.setPositions(selectedFrame);
+      offensiveTeam.setPositions(selectedFrame);
       defensiveTeam.setPositions(selectedFrame);
       graphics.numberOfFrames--;
     }
@@ -208,7 +245,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       if (numberFrameButtonX < mx && mx < numberFrameButtonX + graphics.frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + graphics.frameButtonSize)
       {
         selectedFrame = i;
-	    offensiveTeam.setPositions(selectedFrame);
+        offensiveTeam.setPositions(selectedFrame);
         defensiveTeam.setPositions(selectedFrame);
         break;
       }
@@ -487,44 +524,44 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     boolean menuOn = true;
     while(menuOn)
     {
-	    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
-	    String[] options = new String[] {"Create a Play",
-	      "Run a Play",
-	      "Whiteboard Mode",
-	      "Create Playbook",
-	      "Load Playbook",
-	      "Export Playbook",
-	      "View Tutorials"};
-	    // Get choice from user
-	    int choice = JOptionPane.showOptionDialog(null,
-	      "Welcome to Coach's Corner!",
-	      "CCApp",
-	      JOptionPane.DEFAULT_OPTION,
-	      JOptionPane.INFORMATION_MESSAGE,
-	      icon,
-	      options,
-	      options[6]);
+        ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
+        String[] options = new String[] {"Create a Play",
+          "Run a Play",
+          "Whiteboard Mode",
+          "Create Playbook",
+          "Load Playbook",
+          "Export Playbook",
+          "View Tutorials"};
+        // Get choice from user
+        int choice = JOptionPane.showOptionDialog(null,
+          "Welcome to Coach's Corner!",
+          "CCApp",
+          JOptionPane.DEFAULT_OPTION,
+          JOptionPane.INFORMATION_MESSAGE,
+          icon,
+          options,
+          options[6]);
 
-	    running = true;
+        running = true;
 
-	    // Interpret the user's choice
-	    if(choice == 0){	      
-	      createPlay();
-	    }else if(choice == 1){
-	      animating = true;
-	      runPlay();
-	      animating = false;
-	    }else if(choice == 2){
-	      whiteBoard();
-	    }else if(choice == 3){
-	      createBook();
-	    }else if(choice == 4){
-	      loadBook();
-	    }else if(choice == 5){
-	      exportBook();
-	    }else if(choice == 6){
-	      viewTutorial();
-		  } else {
+        // Interpret the user's choice
+        if(choice == 0){          
+          createPlay();
+        }else if(choice == 1){
+          animating = true;
+          runPlay();
+          animating = false;
+        }else if(choice == 2){
+          whiteBoard();
+        }else if(choice == 3){
+          createBook();
+        }else if(choice == 4){
+          loadBook();
+        }else if(choice == 5){
+          exportBook();
+        }else if(choice == 6){
+          viewTutorial();
+          } else {
           menuOn = false;
       }
     }
@@ -557,11 +594,49 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    */
   public void runPlay()
   {
+    boolean passing = false;
+    Point ballPos = new Point(-1,-1);
+    Point startPos = new Point(-1,-1);
+    Point finalPos = new Point(-1,-1);
+    double velX = 0;
+    double velY = 0;
+    
     for(int i = 0; i < graphics.numberOfFrames - 1; i++)
     {
       offensiveTeam.setPositions(i);
       defensiveTeam.setPositions(i);
       graphics.calculateVelocity(i);
+      
+      Player hasBallThisFrame = offensiveTeam.getBallAtFrame(i);
+      if(hasBallThisFrame == null)
+        hasBallThisFrame = defensiveTeam.getBallAtFrame(i);
+        
+      int ballThisFrameIndex = offensiveTeam.getBallAtFrameIndex(i);
+      if(ballThisFrameIndex == -1)
+        ballThisFrameIndex = defensiveTeam.getBallAtFrameIndex(i);
+        
+      Player hasBallNextFrame = offensiveTeam.getBallAtFrame(i+1);
+      if(hasBallNextFrame == null)
+      hasBallNextFrame = defensiveTeam.getBallAtFrame(i+1);
+      
+      int ballNextFrameIndex = offensiveTeam.getBallAtFrameIndex(i+1);
+      if(ballNextFrameIndex == -1)
+        ballNextFrameIndex = defensiveTeam.getBallAtFrameIndex(i+1);
+        
+      if(ballThisFrameIndex != ballNextFrameIndex)
+      {
+        passing = true;
+        ballPos = hasBallThisFrame.getPositionAtFrame(i);
+        offensiveTeam.setBall();
+        defensiveTeam.setBall();
+        startPos = hasBallThisFrame.getPositionAtFrame(i);
+        finalPos = hasBallNextFrame.getPositionAtFrame(i+1);
+        velX = 0;
+        velY = 0;
+      }else{
+        passing = false;
+      }
+        
       for(int j = 0; j < graphics.frameTime; j++)
       {
         try {runner.sleep(13);}
@@ -570,6 +645,21 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
         graphics.paintField(gBuffer);
         graphics.displayPlayerPositions(gBuffer);
+        if(passing)
+        {         
+          gBuffer.setColor(new Color(102,51,0));
+          gBuffer.fillOval(ballPos.getX(),ballPos.getY(),16,26);
+          gBuffer.setColor(Color.white);
+          gBuffer.drawLine(ballPos.getX()+8,ballPos.getY()+4,ballPos.getX()+8,ballPos.getY()+22);
+          gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+13,ballPos.getX()+11,ballPos.getY()+13);
+          gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+18,ballPos.getX()+11,ballPos.getY()+18);
+          gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+8,ballPos.getX()+11,ballPos.getY()+8);
+          
+          velX += ((double)finalPos.getX() - (double)startPos.getX())/((double)graphics.frameTime);
+          velY += ((double)finalPos.getY() - (double)startPos.getY())/((double)graphics.frameTime);
+          ballPos.setX(startPos.getX() + (int)velX);
+          ballPos.setY(startPos.getY() + (int)velY);
+        }
 
         repaint();
       }

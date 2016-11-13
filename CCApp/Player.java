@@ -15,12 +15,14 @@ public class Player
 {
   String name;
   ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames.
+  ArrayList<Boolean> ballPositions;
   int currentX, currentY, speed;
   Color color;
   int number;
   int diameter;
   double velocityX;
   double velocityY;
+  boolean hasBall;
 
   /**
    * Constructor for objects of class Player which simply takes in x
@@ -31,6 +33,8 @@ public class Player
     name = "";
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
+    ballPositions = new ArrayList<Boolean>();
+    ballPositions.add(false);
     currentX = x;
     currentY = y;
     speed = 0;
@@ -39,6 +43,7 @@ public class Player
     diameter = 30;
     velocityX = 0;
     velocityY = 0;
+    hasBall = false;
   }
 
   /**
@@ -57,6 +62,8 @@ public class Player
     color = playerColor;
     diameter = playerDiameter;
     speed = 0;
+    hasBall = false;
+    ballPositions.add(false);
   }
 
   /**
@@ -151,6 +158,16 @@ public class Player
   {
       return number;
   }
+  
+  public boolean hasBall()
+  {
+      return hasBall;
+  }
+  
+  public boolean hasBallAtFrame(int frame)
+  {
+      return ballPositions.get(frame);
+  }
 
   /**
    * Function which will add a new frame/position to the player
@@ -168,6 +185,7 @@ public class Player
       // if no frames, then add a new frame/postion using point (0,0)
       positions.add(new Point(0,0));
     }
+    ballPositions.add(hasBall);
   }
 
   /**
@@ -177,6 +195,7 @@ public class Player
   public void addFrame(Point position)
   {
     positions.add(new Point(position));
+    ballPositions.add(hasBall);
   }
 
   /**
@@ -186,6 +205,7 @@ public class Player
   public void addFrame(int x, int y)
   {
     positions.add(new Point(x, y));
+    ballPositions.add(hasBall);
   }
 
   /**
@@ -196,6 +216,7 @@ public class Player
     if(positions.size() > 0)
     {
       positions.remove(positions.size() - 1);
+      ballPositions.remove(ballPositions.size() - 1);
     }
   }
 
@@ -294,5 +315,18 @@ public class Player
     {
       speed = s;
     }
+  }
+  
+  public void setBall(boolean b)
+  {
+      hasBall = b;
+  }
+  
+  public void setBallAtFrame(int frame,boolean b)
+  {
+      if(frame < ballPositions.size())
+      {
+        ballPositions.set(frame,b);      
+      }
   }
 }

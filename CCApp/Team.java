@@ -19,8 +19,6 @@ public class Team
   String name;
   ArrayList<Player> players;
 
-
-
   /**
     * Constructor for objects of class Team which take in a team name and
     * jersey color.
@@ -39,6 +37,28 @@ public class Team
   {
     return players.size();
   }
+  
+  public Player getBallAtFrame(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      if(currentPlayer.hasBallAtFrame(frame))
+          return currentPlayer;
+    }
+    return null;
+  }
+  
+  public int getBallAtFrameIndex(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      if(currentPlayer.hasBallAtFrame(frame))
+          return i;
+    }
+    return -1;
+  }  
 
   /**
     * Function which retrieves a list of all the players on the team.
@@ -168,6 +188,16 @@ public class Team
       int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(color);
       gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
+      if(currentPlayer.hasBall())
+      {
+          gBuffer.setColor(new Color(102,51,0));
+          gBuffer.fillOval(currentPlayer.getX(),currentPlayer.getY(),16,26);
+          gBuffer.setColor(Color.white);
+          gBuffer.drawLine(currentPlayer.getX()+8,currentPlayer.getY()+4,currentPlayer.getX()+8,currentPlayer.getY()+22);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+13,currentPlayer.getX()+11,currentPlayer.getY()+13);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+18,currentPlayer.getX()+11,currentPlayer.getY()+18);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+8,currentPlayer.getX()+11,currentPlayer.getY()+8);
+      }
     }
   }
 
@@ -239,6 +269,26 @@ public class Team
       Player currentPlayer = players.get(i);
       Point startingPos = currentPlayer.getPositionAtFrame(frame);
       currentPlayer.setXY(startingPos);
+      boolean hasBall = currentPlayer.hasBallAtFrame(frame);
+      currentPlayer.setBall(hasBall);
+    }
+  }
+  
+  public void setBall()
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      currentPlayer.setBall(false);
+    }
+  }
+  
+  public void setBallAtFrame(int frame)
+  {
+    for(int i = 0; i < players.size(); i++)
+    {
+      Player currentPlayer = players.get(i);
+      currentPlayer.setBallAtFrame(frame, false);
     }
   }
 }
