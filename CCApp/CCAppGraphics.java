@@ -168,6 +168,16 @@ public class CCAppGraphics// extends Applet
     newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
     panel.add(speedLabel);
     panel.add(newSpeed);
+    
+    JLabel ballLabel = new JLabel("Has Ball?");    
+    String[] boolStrings = { "False", "True" };
+    JComboBox newBall = new JComboBox(boolStrings);
+    if(selectedPlayer.hasBall())
+        newBall.setSelectedIndex(1);
+    else
+         newBall.setSelectedIndex(0);
+    panel.add(ballLabel);
+    panel.add(newBall);
 
     int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
@@ -239,8 +249,21 @@ public class CCAppGraphics// extends Applet
           selectedPlayer.setSpeed(selectedPlayer.getSpeed());
         }
       }
+      
+      if(newBall.getSelectedItem() == "True")
+      {          
+          offensiveTeam.setBall();
+          defensiveTeam.setBall();
+          selectedPlayer.setBall(true);
+          
+          offensiveTeam.setBallAtFrame(selectedFrame);
+          defensiveTeam.setBallAtFrame(selectedFrame);
+          selectedPlayer.setBallAtFrame(selectedFrame, true);
+      }
     }
   }
+  
+  
   
   /**
    * Function that displays the lines that have been drawn by the user.
