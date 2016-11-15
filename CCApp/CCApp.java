@@ -26,7 +26,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   CCAppGraphics graphics;
   int width, height;  // Width and height of applet window
   boolean rightKey, leftKey, upKey, downKey;  // Used for keyboard controls (currently not used)
-  
+
   int x, y; // Used for positioning of certain objects on field
   int mx, my;  // the most recently recorded mouse coordinates
   int selectedFrame;  // Holds the number of current frame selected by used
@@ -37,12 +37,12 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
   ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
-  ArrayList<ArrayList<Integer> > frees = new ArrayList<ArrayList<Integer>>();
+  ArrayList<Point> frees = new ArrayList<Point>();
 
   Player selectedPlayer;  // The player that has been most recently clicked on
   Team offensiveTeam;
   Team defensiveTeam;
-    
+
   int dClkRes = 300;    // double-click speed in ms
   long timeMouseDown=0; // last mouse down time
   int lastX=0,lastY=0;  //  last x and y
@@ -56,7 +56,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     width=this.getSize().width;
     height=this.getSize().height;
     Buffer=createImage(width,height);
-    gBuffer=Buffer.getGraphics();  
+    gBuffer=Buffer.getGraphics();
 
     y = (int)(height/20*15);
     x = width/2;
@@ -82,8 +82,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
       defensiveTeam.addPlayer(c);
     }
-    
-    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);  
+
+    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);
 
     // Add mouse listeners to detect mouse interactions
     addMouseListener(this);
@@ -128,7 +128,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
-  
+
 
   /**
    * Function that detects
@@ -137,7 +137,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     long currentTime = event.when;
     /*Check is user has double-clicked*/
-    if ((lastX==x) && (lastY==y) && ((event.when-timeMouseDown) < dClkRes)) 
+    if ((lastX==x) && (lastY==y) && ((event.when-timeMouseDown) < dClkRes))
     {
         // Find the player on offensive team that was right clicked on
       Player newSelectedPlayer = offensiveTeam.findPlayerAtPoint(x, y);
@@ -156,11 +156,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           selectedPlayer = newSelectedPlayer;
         }
       }
-        
+
       offensiveTeam.setBall();
       defensiveTeam.setBall();
       selectedPlayer.setBall(true);
-        
+
       offensiveTeam.setBallAtFrame(selectedFrame);
       defensiveTeam.setBallAtFrame(selectedFrame);
       selectedPlayer.setBallAtFrame(selectedFrame, true);
@@ -512,7 +512,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       e.consume();
     }
-  }  
+    else if(markerMode && freeDraw)
+    {
+      frees.add(new Point(e.getX(), e.getY()));
+    }
+  }
 
   /**
    * Main function that is continuously called when
@@ -545,7 +549,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         running = true;
 
         // Interpret the user's choice
-        if(choice == 0){          
+        if(choice == 0){
           createPlay();
         }else if(choice == 1){
           animating = true;
@@ -566,7 +570,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
   }
-  
+
   /**
    * Function that runs when user selected "Create Play"
    * option from main menu.
@@ -586,8 +590,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       repaint();
     }
-  }  
-    
+  }
+
    /**
    * Function that runs when user selected "Run Play"
    * option from main menu.
@@ -600,29 +604,29 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     Point finalPos = new Point(-1,-1);
     double velX = 0;
     double velY = 0;
-    
+
     for(int i = 0; i < graphics.numberOfFrames - 1; i++)
     {
       offensiveTeam.setPositions(i);
       defensiveTeam.setPositions(i);
       graphics.calculateVelocity(i);
-      
+
       Player hasBallThisFrame = offensiveTeam.getBallAtFrame(i);
       if(hasBallThisFrame == null)
         hasBallThisFrame = defensiveTeam.getBallAtFrame(i);
-        
+
       int ballThisFrameIndex = offensiveTeam.getBallAtFrameIndex(i);
       if(ballThisFrameIndex == -1)
         ballThisFrameIndex = defensiveTeam.getBallAtFrameIndex(i);
-        
+
       Player hasBallNextFrame = offensiveTeam.getBallAtFrame(i+1);
       if(hasBallNextFrame == null)
       hasBallNextFrame = defensiveTeam.getBallAtFrame(i+1);
-      
+
       int ballNextFrameIndex = offensiveTeam.getBallAtFrameIndex(i+1);
       if(ballNextFrameIndex == -1)
         ballNextFrameIndex = defensiveTeam.getBallAtFrameIndex(i+1);
-        
+
       if(ballThisFrameIndex != ballNextFrameIndex)
       {
         passing = true;
@@ -636,7 +640,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }else{
         passing = false;
       }
-        
+
       for(int j = 0; j < graphics.frameTime; j++)
       {
         try {runner.sleep(13);}
@@ -646,7 +650,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         graphics.paintField(gBuffer);
         graphics.displayPlayerPositions(gBuffer);
         if(passing)
-        {         
+        {
           gBuffer.setColor(new Color(102,51,0));
           gBuffer.fillOval(ballPos.getX(),ballPos.getY(),16,26);
           gBuffer.setColor(Color.white);
@@ -654,7 +658,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
           gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+13,ballPos.getX()+11,ballPos.getY()+13);
           gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+18,ballPos.getX()+11,ballPos.getY()+18);
           gBuffer.drawLine(ballPos.getX()+5,ballPos.getY()+8,ballPos.getX()+11,ballPos.getY()+8);
-          
+
           velX += ((double)finalPos.getX() - (double)startPos.getX())/((double)graphics.frameTime);
           velY += ((double)finalPos.getY() - (double)startPos.getY())/((double)graphics.frameTime);
           ballPos.setX(startPos.getX() + (int)velX);
@@ -709,8 +713,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * option from main menu.
    */
   public void viewTutorial(){}
-  
-  
+
+
   /**
    * Function that is automatically called
    * continuously to repaint graphics
@@ -719,7 +723,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     paint(g);
   }
-  
+
   public void paint(Graphics g)
   {
     g.drawImage (Buffer,0,0, this);

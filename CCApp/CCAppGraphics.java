@@ -12,9 +12,9 @@ import java.applet.*;
 import javax.swing.*;
 
 public class CCAppGraphics// extends Applet
-{  
+{
   // instance variables - replace the example below with your own
-  int width, height; 
+  int width, height;
   int frameButtonSize;  // These are used to position the frame menu buttons
   int frameButtonIndentation;
   int frameMenuPositionX;
@@ -23,10 +23,10 @@ public class CCAppGraphics// extends Applet
   int CENTER_OF_FIELD;
   int numberOfFrames; // Total number of frames in animation
   int frameTime;  //number of iterations to animate a frame
-  
+
   Team offensiveTeam;
   Team defensiveTeam;
-    
+
   /**
    * Constructor for objects of class CCAppGraphics
    */
@@ -36,7 +36,7 @@ public class CCAppGraphics// extends Applet
     height = h;
     offensiveTeam = A;
     defensiveTeam = B;
-      
+
     frameButtonSize = 25;
     frameButtonIndentation = 10;
     frameMenuPositionX = 20;
@@ -115,7 +115,7 @@ public class CCAppGraphics// extends Applet
       // Calculate X position of next frame number button
       indentationX += frameButtonSize + frameButtonIndentation;
     }
-  } 
+  }
 
   /**
    * Function used for animation that updates the players'
@@ -136,7 +136,7 @@ public class CCAppGraphics// extends Applet
     offensiveTeam.calculateVelocity(frame, frameTime);
     defensiveTeam.calculateVelocity(frame, frameTime);
   }
-  
+
   /**
    * Function responsible for handling the event when a user
    * right clicks on a player on field.
@@ -168,8 +168,8 @@ public class CCAppGraphics// extends Applet
     newSpeed.setText(String.valueOf(selectedPlayer.getSpeed()));
     panel.add(speedLabel);
     panel.add(newSpeed);
-    
-    JLabel ballLabel = new JLabel("Has Ball?");    
+
+    JLabel ballLabel = new JLabel("Has Ball?");
     String[] boolStrings = { "False", "True" };
     JComboBox newBall = new JComboBox(boolStrings);
     if(selectedPlayer.hasBall())
@@ -249,26 +249,27 @@ public class CCAppGraphics// extends Applet
           selectedPlayer.setSpeed(selectedPlayer.getSpeed());
         }
       }
-      
+
       if(newBall.getSelectedItem() == "True")
-      {          
+      {
           offensiveTeam.setBall();
           defensiveTeam.setBall();
           selectedPlayer.setBall(true);
-          
+
           offensiveTeam.setBallAtFrame(selectedFrame);
           defensiveTeam.setBallAtFrame(selectedFrame);
           selectedPlayer.setBallAtFrame(selectedFrame, true);
       }
     }
   }
-  
-  
-  
+
+
+
   /**
    * Function that displays the lines that have been drawn by the user.
    */
-  public void drawLines(Graphics gBuffer, ArrayList<Line> lines, ArrayList<Line> squares, ArrayList<Line> circles, ArrayList<ArrayList<Integer> > frees){
+  public void drawLines(Graphics gBuffer, ArrayList<Line> lines, ArrayList<Line> squares, ArrayList<Line> circles, ArrayList<Point> frees)
+  {
     gBuffer.setColor(Color.YELLOW);
     // draw straight lines
     for(int i = 0; i < lines.size(); i++)
@@ -281,8 +282,8 @@ public class CCAppGraphics// extends Applet
     // draw free lines
     for(int i = 0; i < frees.size(); i++)
     {
-      ArrayList<Integer> curr = frees.get(i);
-      gBuffer.fillOval(curr.get(0), curr.get(1), 4, 4);
+      Point curr = frees.get(i);
+      gBuffer.fillOval(curr.getX(), curr.getY(), 4, 4);
     }
     // draw squares
     for(int i = 0; i < squares.size(); i++)
@@ -341,7 +342,7 @@ public class CCAppGraphics// extends Applet
       else gBuffer.drawOval(x1,y1,width,height);
     }
   }
-  
+
   public void whiteBoardMenu(Graphics gBuffer, boolean markerMode, boolean lineDraw, boolean freeDraw, boolean sqDraw, boolean circDraw)
   {
       // "Marker Mode" Toggle
