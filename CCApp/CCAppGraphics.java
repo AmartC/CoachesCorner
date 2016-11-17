@@ -83,7 +83,7 @@ public class CCAppGraphics// extends Applet
   /**
    * Function that displays the frame memu.
    */
-  public void displayFrameMenu(Graphics gBuffer)
+  public void displayFrameMenu(Graphics gBuffer, int selectedFrame)
   {
     // Used for positioning of frame label
     int centerOfButton = frameButtonSize / 2;
@@ -104,9 +104,16 @@ public class CCAppGraphics// extends Applet
     int indentationX = frameMenuPositionX;
     for(int i = 0; i < numberOfFrames; i++)
     {
+      if(i == selectedFrame)
+      {
+          gBuffer.setColor(Color.green);
+      }else{
+          gBuffer.setColor(Color.white);
+      }
+      
       // Draw frame number button
-      gBuffer.setColor(Color.white);
       gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize, frameButtonSize);
+          
 
       // Label the frame number button
       gBuffer.setColor(Color.black);

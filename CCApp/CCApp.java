@@ -12,6 +12,7 @@ import java.util.*;
 import java.applet.*;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import java.io.PrintWriter;
 
 
 /**
@@ -585,7 +586,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       try {runner.sleep(13);}
       catch (Exception e) {}
       graphics.paintField(gBuffer);
-      graphics.displayFrameMenu(gBuffer);
+      graphics.displayFrameMenu(gBuffer,selectedFrame);
       graphics.displayPlayerPositions(gBuffer);
 
       repaint();
@@ -649,6 +650,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
         graphics.paintField(gBuffer);
         graphics.displayPlayerPositions(gBuffer);
+        graphics.displayFrameMenu(gBuffer,i+1);
+        
         if(passing)
         {
           gBuffer.setColor(new Color(102,51,0));
@@ -694,7 +697,17 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * Function that runs when user selected "Create Playbook"
    * option from main menu.
    */
-  public void createBook() {}
+  public void createBook()
+  {
+    try{
+      PrintWriter writer = new PrintWriter("the-file-name.txt", "UTF-8");
+      writer.println("The first line");
+      writer.println("The second line");
+      writer.close();
+    } catch (Exception e) {
+     // do something
+    }
+  }
 
   /**
    * Function that runs when user selected "Load Playbook"
