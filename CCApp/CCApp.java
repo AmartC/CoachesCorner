@@ -19,7 +19,7 @@ import java.io.PrintWriter;
  * The CCApp class is the "brain" of the application.
  * Runs application and manages/displays all GUI interactions.
  */
-public class CCApp extends Applet implements Runnable, MouseListener, MouseMotionListener
+public class CCApp extends JApplet implements Runnable, MouseListener, MouseMotionListener
 {
   Thread runner;  // Main thread running the applet
   Graphics gBuffer; // Used to manage what is displayed
@@ -47,6 +47,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int dClkRes = 300;    // double-click speed in ms
   long timeMouseDown=0; // last mouse down time
   int lastX=0,lastY=0;  //  last x and y
+  
+  JPanel myPanel;
+  JButton menu;
 
   /**
    * Function called when applet starts up.
@@ -90,10 +93,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     addMouseListener(this);
     addMouseMotionListener(this);
 
+    myPanel = new JPanel(); // JPanel uses FlowLayout by default
     // Construct the menu button
-    Button menu = new Button("Menu");
-    this.add(menu);
-    menu.setLocation(0,0);
+    menu = new JButton("Menu");
+    myPanel.add(menu);
     menu.addActionListener(
       new ActionListener()
       {
@@ -103,6 +106,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         }
       }
     );
+    getContentPane().add(myPanel, BorderLayout.CENTER);
+    myPanel.setVisible(true);
   }
 
   /**
