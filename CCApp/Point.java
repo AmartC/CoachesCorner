@@ -6,11 +6,13 @@
  * Date: 10/22/2016
  */
 
+import java.io.*;
+
  /**
   * The Point class is used to store the coordinates of the players on the
   * football field in a more organized manner.
   */
-public class Point
+public class Point implements Serializable
 {
   int x;
   int y;

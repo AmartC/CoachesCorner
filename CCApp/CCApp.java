@@ -1,4 +1,4 @@
-/**Authors:
+ /**Authors:
  * Timothy Castiglia
  * Amartya Chakraborty
  * Ethan Fox
@@ -8,6 +8,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 import java.util.*;
 import java.applet.*;
 import java.net.URL;
@@ -529,44 +530,42 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     boolean menuOn = true;
     while(menuOn)
     {
-        ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
-        String[] options = new String[] {"Create a Play",
-          "Run a Play",
-          "Whiteboard Mode",
-          "Create Playbook",
-          "Load Playbook",
-          "Export Playbook",
-          "View Tutorials"};
-        // Get choice from user
-        int choice = JOptionPane.showOptionDialog(null,
-          "Welcome to Coach's Corner!",
-          "CCApp",
-          JOptionPane.DEFAULT_OPTION,
-          JOptionPane.INFORMATION_MESSAGE,
-          icon,
-          options,
-          options[6]);
+	    ImageIcon icon = new ImageIcon("CCApp_img.png", "CCApp logo");
+	    String[] options = new String[] {"Create a Play",
+	      "Run a Play",
+	      "Whiteboard Mode",
+	      "Save Play",
+	      "Load Play",
+	    // Get choice from user
+	    int choice = JOptionPane.showOptionDialog(null,
+	      "Welcome to Coach's Corner!",
+	      "CCApp",
+	      JOptionPane.DEFAULT_OPTION,
+	      JOptionPane.INFORMATION_MESSAGE,
+	      icon,
+	      options,
+	      options[5]);
 
-        running = true;
+	    running = true;
 
-        // Interpret the user's choice
-        if(choice == 0){
-          createPlay();
-        }else if(choice == 1){
-          animating = true;
-          runPlay();
-          animating = false;
-        }else if(choice == 2){
-          whiteBoard();
-        }else if(choice == 3){
-          createBook();
-        }else if(choice == 4){
-          loadBook();
-        }else if(choice == 5){
-          exportBook();
-        }else if(choice == 6){
-          viewTutorial();
-          } else {
+	    // Interpret the user's choice
+	    if(choice == 0){
+	      createPlay();
+	    }else if(choice == 1){
+	      animating = true;
+	      runPlay();
+	      animating = false;
+	    }else if(choice == 2){
+	      whiteBoard();
+	    }else if(choice == 3){
+	      savePlay();
+	    }else if(choice == 4){
+	      loadPlay();
+	    }else if(choice == 5){
+	      exportBook();
+	    }else if(choice == 6){
+	      viewTutorial();
+		  } else {
           menuOn = false;
       }
     }
@@ -697,23 +696,30 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * Function that runs when user selected "Create Playbook"
    * option from main menu.
    */
-  public void createBook()
+  public void savePlay()
   {
-    try{
-      PrintWriter writer = new PrintWriter("the-file-name.txt", "UTF-8");
-      writer.println("The first line");
-      writer.println("The second line");
-      writer.close();
-    } catch (Exception e) {
-     // do something
-    }
+    SaveFileChooser saveNewFile = new SaveFileChooser();
+    saveNewFile.savePlay(offensiveTeam, defensiveTeam);
   }
 
   /**
    * Function that runs when user selected "Load Playbook"
    * option from main menu.
    */
-  public void loadBook(){}
+  public void loadPlay()
+  {
+    OpenFileChooser loadNewFile = new OpenFileChooser();
+    ArrayList<Team> loadedTeams = loadNewFile.loadPlay();
+    if(loadedTeams == null)
+    {
+      return;
+    }
+    offensiveTeam = loadedTeams.get(0);
+    defensiveTeam = loadedTeams.get(1);
+    System.out.println("Size of team: " + offensiveTeam.getSize());
+    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);
+    graphics.numberOfFrames = offensiveTeam.getPlayers().get(0).getNumberOfFrames();
+  }
 
   /**
    * Function that runs when user selected "Export Playbook"
@@ -741,4 +747,5 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     g.drawImage (Buffer,0,0, this);
   }
+
 }
