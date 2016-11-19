@@ -8,6 +8,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 import java.util.*;
 import java.applet.*;
 import java.net.URL;
@@ -26,7 +27,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   CCAppGraphics graphics;
   int width, height;  // Width and height of applet window
   boolean rightKey, leftKey, upKey, downKey;  // Used for keyboard controls (currently not used)
-  
+
   int x, y; // Used for positioning of certain objects on field
   int mx, my;  // the most recently recorded mouse coordinates
   int selectedFrame;  // Holds the number of current frame selected by used
@@ -53,7 +54,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     width=this.getSize().width;
     height=this.getSize().height;
     Buffer=createImage(width,height);
-    gBuffer=Buffer.getGraphics();  
+    gBuffer=Buffer.getGraphics();
 
     y = (int)(height/20*15);
     x = width/2;
@@ -79,8 +80,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       Player c = new Player(x + (25 * (b - 5)) - 20, y + 10);
       defensiveTeam.addPlayer(c);
     }
-    
-    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);  
+
+    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);
 
     // Add mouse listeners to detect mouse interactions
     addMouseListener(this);
@@ -95,7 +96,65 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       {
         public void actionPerformed(ActionEvent event)
         {
-            running = false;
+          JPanel panel = new JPanel();
+          JOptionPane.showConfirmDialog(null, panel, "What's going?", JOptionPane.OK_CANCEL_OPTION);
+
+
+          try {
+
+            String content = "This is the content to write into file";
+
+            File file = new File("C:\\Users\\chenga2\\Documents\\GitHub\\CoachesCorner\\CCApp\\test.txt");
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+              file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+
+            System.out.println("Done");
+
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          running = false;
+        }
+      }
+    );
+
+    /*Button save = new Button("Save");
+    this.add(save);
+    save.setLocation(5,0);
+    save.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed(ActionEvent event)
+        {
+          FileChooserDemo.startSaving();
+        }
+      }
+    );*/
+
+    Button save = new Button("Save");
+    this.add(save);
+    save.setLocation(5,0);
+    save.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent ae )
+        {
+          SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                  //Turn off metal's use of bold fonts
+                  //UIManager.put("swing.boldMetal", Boolean.FALSE);
+                  //new SaveFileChooser(offensiveTeam, defensiveTeam);
+              }
+          });
+
         }
       }
     );
@@ -125,7 +184,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
   }
 
-  
+
 
   /**
    * Function that detects
@@ -475,7 +534,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       e.consume();
     }
-  }  
+  }
 
   /**
    * Main function that is continuously called when
@@ -508,7 +567,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	    running = true;
 
 	    // Interpret the user's choice
-	    if(choice == 0){	      
+	    if(choice == 0){
 	      createPlay();
 	    }else if(choice == 1){
 	      animating = true;
@@ -517,9 +576,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	    }else if(choice == 2){
 	      whiteBoard();
 	    }else if(choice == 3){
-	      createBook();
+	      savePlay();
 	    }else if(choice == 4){
-	      loadBook();
+	      loadPlay();
 	    }else if(choice == 5){
 	      exportBook();
 	    }else if(choice == 6){
@@ -529,7 +588,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       }
     }
   }
-  
+
   /**
    * Function that runs when user selected "Create Play"
    * option from main menu.
@@ -549,8 +608,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       repaint();
     }
-  }  
-    
+  }
+
    /**
    * Function that runs when user selected "Run Play"
    * option from main menu.
@@ -600,13 +659,30 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * Function that runs when user selected "Create Playbook"
    * option from main menu.
    */
-  public void createBook() {}
+  public void savePlay()
+  {
+    SaveFileChooser saveNewFile = new SaveFileChooser();
+    saveNewFile.savePlay(offensiveTeam, defensiveTeam);
+  }
 
   /**
    * Function that runs when user selected "Load Playbook"
    * option from main menu.
    */
-  public void loadBook(){}
+  public void loadPlay()
+  {
+    OpenFileChooser loadNewFile = new OpenFileChooser();
+    ArrayList<Team> loadedTeams = loadNewFile.loadPlay();
+    if(loadedTeams == null)
+    {
+      return;
+    }
+    offensiveTeam = loadedTeams.get(0);
+    defensiveTeam = loadedTeams.get(1);
+    System.out.println("Size of team: " + offensiveTeam.getSize());
+    graphics = new CCAppGraphics(width,height,offensiveTeam,defensiveTeam);
+    graphics.numberOfFrames = offensiveTeam.getPlayers().get(0).getNumberOfFrames();
+  }
 
   /**
    * Function that runs when user selected "Export Playbook"
@@ -619,8 +695,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * option from main menu.
    */
   public void viewTutorial(){}
-  
-  
+
+
   /**
    * Function that is automatically called
    * continuously to repaint graphics
@@ -629,9 +705,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   {
     paint(g);
   }
-  
+
   public void paint(Graphics g)
   {
     g.drawImage (Buffer,0,0, this);
   }
+
 }
