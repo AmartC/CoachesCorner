@@ -167,9 +167,9 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       defensiveTeam.setBallAtFrame(selectedFrame);
       selectedPlayer.setBallAtFrame(selectedFrame, true);
     } else {
-        timeMouseDown = event.when;
-        lastX=x;
-        lastY=y;
+      timeMouseDown = event.when;
+      lastX=x;
+      lastY=y;
     }
     return true;
   }
@@ -288,10 +288,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       {
         if(!lineDraw)
         {
-            lineDraw = true;
-            freeDraw = false;
-            sqDraw = false;
-            circDraw = false;
+          lineDraw = true;
+          freeDraw = false;
+          sqDraw = false;
+          circDraw = false;
         }
         else
         {
@@ -303,10 +303,10 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       {
         if(!freeDraw)
         {
-            freeDraw = true;
-            lineDraw = false;
-            sqDraw = false;
-            circDraw = false;
+          freeDraw = true;
+          lineDraw = false;
+          sqDraw = false;
+          circDraw = false;
         }
         else
         {
@@ -566,8 +566,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	    }else if(choice == 6){
 	      viewTutorial();
 		  } else {
-          //System.out.println("ooops");
-          menuOn = false;
+        menuOn = false;
       }
     }
   }
@@ -614,19 +613,27 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
       Player hasBallThisFrame = offensiveTeam.getBallAtFrame(i);
       if(hasBallThisFrame == null)
+      {
         hasBallThisFrame = defensiveTeam.getBallAtFrame(i);
+      }
 
       int ballThisFrameIndex = offensiveTeam.getBallAtFrameIndex(i);
       if(ballThisFrameIndex == -1)
+      {
         ballThisFrameIndex = defensiveTeam.getBallAtFrameIndex(i);
+      }
 
       Player hasBallNextFrame = offensiveTeam.getBallAtFrame(i+1);
       if(hasBallNextFrame == null)
-      hasBallNextFrame = defensiveTeam.getBallAtFrame(i+1);
+      {
+        hasBallNextFrame = defensiveTeam.getBallAtFrame(i+1);
+      }
 
       int ballNextFrameIndex = offensiveTeam.getBallAtFrameIndex(i+1);
       if(ballNextFrameIndex == -1)
+      {
         ballNextFrameIndex = defensiveTeam.getBallAtFrameIndex(i+1);
+      }
 
       if(ballThisFrameIndex != ballNextFrameIndex)
       {
@@ -680,7 +687,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   public void whiteBoard()
   {
     whiteBoardMode = true;
-    while(running){
+    while(running)
+    {
       try {runner.sleep(13);}
       catch (Exception e) {}
       graphics.paintField(gBuffer);
@@ -726,13 +734,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
    * Function that runs when user selected "Export Playbook"
    * option from main menu.
    */
-  public void exportBook(){}
+  public void exportBook() {}
 
   /**
    * Function that runs when user selected "View Tutorial"
    * option from main menu.
    */
-  public void viewTutorial(){}
+  public void viewTutorial() {}
 
 
   /**
