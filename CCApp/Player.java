@@ -159,12 +159,17 @@ public class Player implements Serializable
   {
       return number;
   }
-  
+
+  public int getNumberOfFrames()
+  {
+    return positions.size();
+  }
+
   public boolean hasBall()
   {
       return hasBall;
   }
-  
+
   public boolean hasBallAtFrame(int frame)
   {
       return ballPositions.get(frame);
@@ -317,17 +322,17 @@ public class Player implements Serializable
       speed = s;
     }
   }
-  
+
   public void setBall(boolean b)
   {
       hasBall = b;
   }
-  
+
   public void setBallAtFrame(int frame,boolean b)
   {
       if(frame < ballPositions.size())
       {
-        ballPositions.set(frame,b);      
+        ballPositions.set(frame,b);
       }
   }
 }

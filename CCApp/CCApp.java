@@ -535,7 +535,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      "Run a Play",
 	      "Whiteboard Mode",
 	      "Save Play",
-	      "Load Play",
+	      "Load Play"};
 	    // Get choice from user
 	    int choice = JOptionPane.showOptionDialog(null,
 	      "Welcome to Coach's Corner!",
@@ -544,7 +544,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	      JOptionPane.INFORMATION_MESSAGE,
 	      icon,
 	      options,
-	      options[5]);
+	      options[4]);
 
 	    running = true;
 
@@ -566,6 +566,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 	    }else if(choice == 6){
 	      viewTutorial();
 		  } else {
+          //System.out.println("ooops");
           menuOn = false;
       }
     }
@@ -650,7 +651,7 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
         graphics.paintField(gBuffer);
         graphics.displayPlayerPositions(gBuffer);
         graphics.displayFrameMenu(gBuffer,i+1);
-        
+
         if(passing)
         {
           gBuffer.setColor(new Color(102,51,0));
