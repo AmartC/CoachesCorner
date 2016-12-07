@@ -82,9 +82,11 @@ public class Team implements Serializable
     * object for that player, adds the player to its list of players and
     * finally returns that player.
     */
-  public Player addNewPlayer(Point position, String playerName, int playerNumber, int playerDiameter)
+  public Player addNewPlayer(Point position, String playerName, 
+      int playerNumber, int playerDiameter)
   {
-    Player newPlayer = new Player(position.getX(), position.getY(), playerName, playerNumber, color, playerDiameter);
+    Player newPlayer = new Player(position.getX(), position.getY(), 
+        playerName, playerNumber, color, playerDiameter);
     players.add(newPlayer);
     return newPlayer;
   }
@@ -96,9 +98,11 @@ public class Team implements Serializable
     * the player's coordinates, it instead takes in the individual x and y
     * coordinates.
     */
-  public Player addNewPlayer(int x, int y, String playerName, int playerNumber, int playerDiameter)
+  public Player addNewPlayer(int x, int y, String playerName, 
+      int playerNumber, int playerDiameter)
   {
-    Player newPlayer = new Player(x, y, playerName, playerNumber, color, playerDiameter);
+    Player newPlayer = new Player(x, y, playerName, playerNumber, 
+        color, playerDiameter);
     players.add(newPlayer);
     return newPlayer;
   }
@@ -142,7 +146,8 @@ public class Team implements Serializable
       int playerPositionY = currentPlayer.getY();
       int playerCircleDiameter = currentPlayer.getDiameter();
 
-      if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)
+      if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter
+          && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)
       {
         return currentPlayer;
       }
@@ -166,7 +171,8 @@ public class Team implements Serializable
       int playerPositionY = currentPlayer.getY();
       int playerCircleDiameter = currentPlayer.getDiameter();
 
-      if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)
+      if (playerPositionX < targetX && targetX < playerPositionX + playerCircleDiameter 
+          && playerPositionY < targetY && targetY < playerPositionY+playerCircleDiameter)
       {
         return currentPlayer;
       }
@@ -187,16 +193,21 @@ public class Team implements Serializable
       int playerPositionY = currentPlayer.getY();
       int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(color);
-      gBuffer.fillOval(playerPositionX, playerPositionY, playerCircleDiameter, playerCircleDiameter);
+      gBuffer.fillOval(playerPositionX, playerPositionY, 
+          playerCircleDiameter, playerCircleDiameter);
       if(currentPlayer.hasBall())
       {
           gBuffer.setColor(new Color(102,51,0));
           gBuffer.fillOval(currentPlayer.getX(),currentPlayer.getY(),16,26);
           gBuffer.setColor(Color.white);
-          gBuffer.drawLine(currentPlayer.getX()+8,currentPlayer.getY()+4,currentPlayer.getX()+8,currentPlayer.getY()+22);
-          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+13,currentPlayer.getX()+11,currentPlayer.getY()+13);
-          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+18,currentPlayer.getX()+11,currentPlayer.getY()+18);
-          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+8,currentPlayer.getX()+11,currentPlayer.getY()+8);
+          gBuffer.drawLine(currentPlayer.getX()+8,currentPlayer.getY()+4,
+              currentPlayer.getX()+8,currentPlayer.getY()+22);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+13,
+              currentPlayer.getX()+11,currentPlayer.getY()+13);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+18,
+              currentPlayer.getX()+11,currentPlayer.getY()+18);
+          gBuffer.drawLine(currentPlayer.getX()+5,currentPlayer.getY()+8,
+              currentPlayer.getX()+11,currentPlayer.getY()+8);
       }
     }
   }
@@ -213,7 +224,8 @@ public class Team implements Serializable
       Point playerPosition = currentPlayer.getPositionAtFrame(frame);
       int playerCircleDiameter = currentPlayer.getDiameter();
       gBuffer.setColor(color);
-      gBuffer.fillOval(playerPosition.getX(), playerPosition.getY(), playerCircleDiameter, playerCircleDiameter);
+      gBuffer.fillOval(playerPosition.getX(), playerPosition.getY(), 
+          playerCircleDiameter, playerCircleDiameter);
     }
   }
 
@@ -225,8 +237,10 @@ public class Team implements Serializable
     for(int i = 0; i < players.size(); i++)
     {
       Player currentPlayer = players.get(i);
-      currentPlayer.setX((int)(currentPlayer.getPositionAtFrame(frame).getX()+step*currentPlayer.getVelX()));
-      currentPlayer.setY((int)(currentPlayer.getPositionAtFrame(frame).getY()+step*currentPlayer.getVelY()));
+      currentPlayer.setX((int)(currentPlayer.getPositionAtFrame(frame).getX()
+          +step*currentPlayer.getVelX()));
+      currentPlayer.setY((int)(currentPlayer.getPositionAtFrame(frame).getY()
+          +step*currentPlayer.getVelY()));
     }
   }
 

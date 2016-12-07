@@ -15,7 +15,7 @@ import java.io.*;
 public class Player implements Serializable
 {
   String name;
-  ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames.
+  ArrayList<Point> positions; // Store positions of player in each frame. Indicies of array = frames
   ArrayList<Boolean> ballPositions;
   int currentX, currentY, speed;
   Color color;
@@ -52,7 +52,8 @@ public class Player implements Serializable
    * and y coordinates also take in other variables including name, number,
    * color and diameter..
    */
-  public Player(int x, int y, String playerName, int playerNumber, Color playerColor, int playerDiameter)
+  public Player(int x, int y, String playerName, int playerNumber, 
+      Color playerColor, int playerDiameter)
   {
     positions = new ArrayList<Point>();
     positions.add(new Point(x, y));
@@ -105,7 +106,8 @@ public class Player implements Serializable
   }
 
   /**
-   * Function which will return a point object consisting of the player's current position on the field.
+   * Function which will return a point object consisting of 
+   * the player's current position on the field.
    */
   public Point getXY()
   {
@@ -330,9 +332,9 @@ public class Player implements Serializable
 
   public void setBallAtFrame(int frame,boolean b)
   {
-      if(frame < ballPositions.size())
-      {
-        ballPositions.set(frame,b);
-      }
+    if(frame < ballPositions.size())
+    {
+      ballPositions.set(frame,b);
+    }
   }
 }
