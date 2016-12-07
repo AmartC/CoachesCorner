@@ -34,9 +34,11 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
   int selectedFrame;  // Holds the number of current frame selected by used
 
   int playerDiameter;   // Player's circle/dot diameter
-  boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw, running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
+  boolean isMouseDraggingPlayer, whiteBoardMode, markerMode, lineDraw, freeDraw, sqDraw, circDraw,
+      running, animating; // various booleans for dragging mouse, whiteboard mode, and animation
   ArrayList<Point> paint_coords; // coordinates for drawing straight lines
-  ArrayList<Line> lines = new ArrayList<Line>(); // list of straight lines to draw in Whiteboard Mode
+  // list of straight lines to draw in Whiteboard Mode
+  ArrayList<Line> lines = new ArrayList<Line>();
   ArrayList<Line> squares = new ArrayList<Line>(); // list of squares to draw in Whiteboard Mode
   ArrayList<Line> circles = new ArrayList<Line>(); // list of circles to draw in Whiteboard Mode
   ArrayList<Point> frees = new ArrayList<Point>();
@@ -203,10 +205,13 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
 
     // Calculate position of the remove frame button
     int minusFrameButtonX = graphics.frameMenuPositionX;
-    int minusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize - graphics.frameButtonIndentation;
+    int minusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize
+        - graphics.frameButtonIndentation;
 
     // Check if the remove frame button has been clicked on
-    if (graphics.numberOfFrames > 1 && (minusFrameButtonX < mx && mx < minusFrameButtonX + graphics.frameButtonSize && minusFrameButtonY < my && my < minusFrameButtonY + graphics.frameButtonSize))
+    if (graphics.numberOfFrames > 1 && (minusFrameButtonX < mx && mx < minusFrameButtonX
+        + graphics.frameButtonSize && minusFrameButtonY < my && my < minusFrameButtonY
+        + graphics.frameButtonSize))
     {
       offensiveTeam.removeLastFrameFromPlayers();
       defensiveTeam.removeLastFrameFromPlayers();
@@ -223,11 +228,14 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
     }
 
     // Calculate position of the add frame button
-    int plusFrameButtonX = graphics.frameMenuPositionX + graphics.frameButtonSize + graphics.frameButtonIndentation;
-    int plusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize - graphics.frameButtonIndentation;
+    int plusFrameButtonX = graphics.frameMenuPositionX + graphics.frameButtonSize
+        + graphics.frameButtonIndentation;
+    int plusFrameButtonY = graphics.frameMenuPositionY - graphics.frameButtonSize
+        - graphics.frameButtonIndentation;
 
     // Check if the add frame button has been clicked on
-    if (plusFrameButtonX < mx && mx < plusFrameButtonX + graphics.frameButtonSize && plusFrameButtonY < my && my < plusFrameButtonY + graphics.frameButtonSize)
+    if (plusFrameButtonX < mx && mx < plusFrameButtonX + graphics.frameButtonSize
+        && plusFrameButtonY < my && my < plusFrameButtonY + graphics.frameButtonSize)
     {
       offensiveTeam.addNewFrameToPlayers();
       defensiveTeam.addNewFrameToPlayers();
@@ -244,7 +252,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       int numberFrameButtonY = graphics.frameMenuPositionY;
 
       // Check if the frame number button has been clicked on
-      if (numberFrameButtonX < mx && mx < numberFrameButtonX + graphics.frameButtonSize && numberFrameButtonY < my && my < numberFrameButtonY + graphics.frameButtonSize)
+      if (numberFrameButtonX < mx && mx < numberFrameButtonX + graphics.frameButtonSize
+          && numberFrameButtonY < my && my < numberFrameButtonY + graphics.frameButtonSize)
       {
         selectedFrame = i;
         offensiveTeam.setPositions(selectedFrame);
@@ -435,7 +444,8 @@ public class CCApp extends Applet implements Runnable, MouseListener, MouseMotio
       lines.add(new_line);
       paint_coords.clear();
     }
-    else if(markerMode && (sqDraw || circDraw)) // If marker and draw circle/square mode were on, then keep track of point of release
+    // If marker and draw circle/square mode were on then keep track of point of release
+    else if(markerMode && (sqDraw || circDraw))
     {
       paint_coords.add(new Point(e.getX(), e.getY()));
       Point start_point = paint_coords.get(0);
