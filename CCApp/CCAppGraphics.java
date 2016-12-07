@@ -65,8 +65,10 @@ public class CCAppGraphics// extends Applet
       {
         gBuffer.drawLine(0,i*(int)ONE_YARD,10,i*(int)ONE_YARD);
         gBuffer.drawLine(width-10,i*(int)ONE_YARD,width,i*(int)ONE_YARD);
-        gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
-        gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,(int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
+        gBuffer.drawLine((int)(CENTER_OF_FIELD-ONE_YARD*(12.5/3)),i*(int)ONE_YARD,
+            (int)(CENTER_OF_FIELD-ONE_YARD*(11.5/3)),i*(int)ONE_YARD);
+        gBuffer.drawLine((int)(CENTER_OF_FIELD+ONE_YARD*(11.5/3)),i*(int)ONE_YARD,
+            (int)(CENTER_OF_FIELD+ONE_YARD*(12.5/3)),i*(int)ONE_YARD);
       }
     }
   }
@@ -90,15 +92,21 @@ public class CCAppGraphics// extends Applet
 
     // Draw the remove ("-") frame button
     gBuffer.setColor(Color.gray);
-    gBuffer.fillRect(frameMenuPositionX, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
+    gBuffer.fillRect(frameMenuPositionX, frameMenuPositionY - frameButtonSize -
+        frameButtonIndentation, frameButtonSize, frameButtonSize);
     gBuffer.setColor(Color.white);
-    gBuffer.drawString("-", frameMenuPositionX + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
+    gBuffer.drawString("-", frameMenuPositionX + centerOfButton, frameMenuPositionY
+        - frameButtonSize - frameButtonIndentation + centerOfButton);
 
     // Draw the add ("+") frame button
     gBuffer.setColor(Color.gray);
-    gBuffer.fillRect(frameMenuPositionX + frameButtonSize + frameButtonIndentation, frameMenuPositionY - frameButtonSize - frameButtonIndentation, frameButtonSize, frameButtonSize);
+    gBuffer.fillRect(frameMenuPositionX + frameButtonSize + frameButtonIndentation,
+        frameMenuPositionY - frameButtonSize - frameButtonIndentation,
+        frameButtonSize, frameButtonSize);
     gBuffer.setColor(Color.white);
-    gBuffer.drawString("+", frameMenuPositionX + frameButtonSize + frameButtonIndentation + centerOfButton, frameMenuPositionY - frameButtonSize - frameButtonIndentation + centerOfButton);
+    gBuffer.drawString("+", frameMenuPositionX + frameButtonSize +
+        frameButtonIndentation + centerOfButton, frameMenuPositionY - frameButtonSize -
+        frameButtonIndentation + centerOfButton);
 
     // Used for X position of each frame number botton
     int indentationX = frameMenuPositionX;
@@ -110,14 +118,16 @@ public class CCAppGraphics// extends Applet
       }else{
           gBuffer.setColor(Color.white);
       }
-      
+
       // Draw frame number button
-      gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize, frameButtonSize);
-          
+      gBuffer.fillRect(indentationX, frameMenuPositionY, frameButtonSize,
+          frameButtonSize);
+
 
       // Label the frame number button
       gBuffer.setColor(Color.black);
-      gBuffer.drawString("" + i, indentationX + centerOfButton, frameMenuPositionY + centerOfButton);
+      gBuffer.drawString("" + i, indentationX + centerOfButton,
+          frameMenuPositionY + centerOfButton);
 
       // Calculate X position of next frame number button
       indentationX += frameButtonSize + frameButtonIndentation;
@@ -186,7 +196,9 @@ public class CCAppGraphics// extends Applet
     panel.add(ballLabel);
     panel.add(newBall);
 
-    int value = JOptionPane.showConfirmDialog(null, panel, "Enter position and speed for player in this frame.", JOptionPane.OK_CANCEL_OPTION);
+    int value = JOptionPane.showConfirmDialog(null, panel,
+      "Enter position and speed for player in this frame.",
+        JOptionPane.OK_CANCEL_OPTION);
     if (value == JOptionPane.OK_OPTION)
     {
       int updatedX = playerPoints.getX();
@@ -275,7 +287,8 @@ public class CCAppGraphics// extends Applet
   /**
    * Function that displays the lines that have been drawn by the user.
    */
-  public void drawLines(Graphics gBuffer, ArrayList<Line> lines, ArrayList<Line> squares, ArrayList<Line> circles, ArrayList<Point> frees)
+  public void drawLines(Graphics gBuffer, ArrayList<Line> lines,
+    ArrayList<Line> squares, ArrayList<Line> circles, ArrayList<Point> frees)
   {
     gBuffer.setColor(Color.YELLOW);
     // draw straight lines
@@ -350,7 +363,8 @@ public class CCAppGraphics// extends Applet
     }
   }
 
-  public void whiteBoardMenu(Graphics gBuffer, boolean markerMode, boolean lineDraw, boolean freeDraw, boolean sqDraw, boolean circDraw)
+  public void whiteBoardMenu(Graphics gBuffer, boolean markerMode,
+      boolean lineDraw, boolean freeDraw, boolean sqDraw, boolean circDraw)
   {
       // "Marker Mode" Toggle
       if(markerMode)gBuffer.setColor(Color.GREEN);
